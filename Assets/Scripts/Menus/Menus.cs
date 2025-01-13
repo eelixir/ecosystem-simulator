@@ -33,6 +33,12 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadScene("Environment");
     }
 
+    // Changes scene to Environment
+    public void gameInitiationEnvironemntPlaceholder()
+    {
+        SceneManager.LoadScene("Environment");
+    }
+
     // Closes the application
     public void Exit()
     {

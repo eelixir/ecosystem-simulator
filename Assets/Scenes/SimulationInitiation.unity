@@ -619,7 +619,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1184045613}
         m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
-        m_MethodName: Controls
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -628,7 +628,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 0
+        m_CallState: 1
 --- !u!114 &1215352944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1071,7 +1071,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1184045613}
         m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
-        m_MethodName: GameStart
+        m_MethodName: gameInitiationEnvironemntPlaceholder
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1080,7 +1080,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 0
+        m_CallState: 1
 --- !u!114 &1650628682
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1279,7 +1279,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1184045613}
         m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
-        m_MethodName: Exit
+        m_MethodName: ReturnToMain
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1288,7 +1288,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 0
+        m_CallState: 1
 --- !u!114 &2098989181
 MonoBehaviour:
   m_ObjectHideFlags: 0
