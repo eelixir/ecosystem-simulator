@@ -34,7 +34,7 @@ public class MainMenu : MonoBehaviour
     }
 
     // Changes scene to Environment
-    public void gameInitiationEnvironemntPlaceholder()
+    public void gameInitiationEnvironemnt()
     {
         SceneManager.LoadScene("Environment");
     }
