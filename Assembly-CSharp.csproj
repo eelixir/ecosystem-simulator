@@ -68,6 +68,7 @@
     <Compile Include="Assets\Scripts\Animals\WolfOOP.cs" />
     <Compile Include="Assets\Scripts\Animals\OrganismOOP.cs" />
     <Compile Include="Assets\Scripts\Animals\DeerOOP.cs" />
+    <Compile Include="Assets\Scripts\OrganismInitialization.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
