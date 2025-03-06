@@ -61,10 +61,10 @@ PrefabInstance:
       addedObject: {fileID: 8591869131661801847}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 326366decd3cacf4d91fa10f3eae95b5, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3442167012005856442}
+      addedObject: {fileID: 7826744983394934845}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 326366decd3cacf4d91fa10f3eae95b5, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7826744983394934845}
+      addedObject: {fileID: 6547273829417466451}
   m_SourcePrefab: {fileID: 100100000, guid: 326366decd3cacf4d91fa10f3eae95b5, type: 3}
 --- !u!1 &6912945089947011823 stripped
 GameObject:
@@ -93,12 +93,20 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!195 &3442167012005856442
+--- !u!33 &7826744983394934845
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6912945089947011823}
+  m_Mesh: {fileID: -2432090755550338912, guid: 326366decd3cacf4d91fa10f3eae95b5, type: 3}
+--- !u!195 &6547273829417466451
 NavMeshAgent:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -116,15 +124,7 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 2
-  m_BaseOffset: 0
+  m_Height: 2.7
+  m_BaseOffset: 1.1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!33 &7826744983394934845
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6912945089947011823}
-  m_Mesh: {fileID: -2432090755550338912, guid: 326366decd3cacf4d91fa10f3eae95b5, type: 3}

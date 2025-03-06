@@ -69,6 +69,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f1d149970046cdd4f9c859e676025266, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5163203549361632481}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f1d149970046cdd4f9c859e676025266, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1902204680744925680}
     - targetCorrespondingSourceObject: {fileID: -6188577696708935991, guid: f1d149970046cdd4f9c859e676025266, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1815375081997548911}
@@ -162,3 +165,30 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3938902168483293580}
   m_Mesh: {fileID: 1816843661807209135, guid: f1d149970046cdd4f9c859e676025266, type: 3}
+--- !u!114 &1902204680744925680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3938902168483293580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdea83b1af57ba94e94d9eb08d0f8bc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  position: {x: 0, y: 0, z: 0}
+  organismName: 
+  isAlive: 0
+  health: 0
+  healthMax: 0
+  hunger: 0
+  hungerMax: 0
+  thirst: 0
+  thirstMax: 0
+  stamina: 0
+  staminaMax: 0
+  movementState: 
+  behaviouralState: 
+  skills: []
+  radius: 0

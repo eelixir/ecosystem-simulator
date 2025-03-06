@@ -7,9 +7,13 @@ public class OrganismInitilisation : MonoBehaviour
     public GameObject WolfPrefab;
     public GameObject PlantPrefab;
 
-    public int DeerCount = 10;
-    public int WolfCount = 10;
-    public int PlantCount = 10;
+    public static string DeerCount = InputHandler.DeerPopulationInput;
+    public static string WolfCount = InputHandler.WolfPopulationInput;
+    public static string PlantCount = InputHandler.PlantPopulationInput;
+    public int DeerCountInt = int.Parse(DeerCount);
+    public int WolfCountInt = int.Parse(WolfCount);
+    public int PlantCountInt = int.Parse(PlantCount);
+
 
     public float cubeHeightOffset = 0f;
     private Collider platformCollider;
@@ -24,20 +28,15 @@ public class OrganismInitilisation : MonoBehaviour
         GameObject platform = GameObject.Find("Platform");
         if (platform == null)
         {
-            Debug.LogError("Platform object not found in the scene!");
+            Debug.LogError("Platform object not found");
             return;
         }
 
         platformCollider = platform.GetComponent<Collider>();
-        if (platformCollider == null)
-        {
-            Debug.LogWarning("No collider found on the Platform. Adding BoxCollider...");
-            platformCollider = platform.AddComponent<BoxCollider>(); // Add BoxCollider if missing
-        }
 
-        SpawnObjects(DeerPrefab, DeerCount);
-        SpawnObjects(WolfPrefab, WolfCount);
-        SpawnObjects(PlantPrefab, PlantCount);
+        SpawnObjects(DeerPrefab, DeerCountInt);
+        SpawnObjects(WolfPrefab, WolfCountInt);
+        SpawnObjects(PlantPrefab, PlantCountInt);
     }
 
     void SpawnObjects(GameObject objectPrefab, int count)
@@ -45,7 +44,8 @@ public class OrganismInitilisation : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             Vector3 spawnPosition = GetRandomPositionOnCube();
-            if (spawnPosition != Vector3.zero) // Ensure we got a valid position
+            // Check if position is valid
+            if (spawnPosition != Vector3.zero) 
             {
                 Instantiate(objectPrefab, spawnPosition, Quaternion.identity);
             }
@@ -54,7 +54,7 @@ public class OrganismInitilisation : MonoBehaviour
 
     Vector3 GetRandomPositionOnCube()
     {
-        // Get the platform's bounds
+        // Get the platform object's bounds
         Vector3 platformCenter = platformCollider.bounds.center;
         Vector3 platformSize = platformCollider.bounds.size;
 

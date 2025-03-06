@@ -4,10 +4,10 @@ using TMPro;
 public class InputHandler : MonoBehaviour
 {
     // Store the collected values
-    private string DeerPopulationInput;
-    private string WolfPopulationInput;
-    private string PlantPopulationInput;
-    private string TimeLengthInput;
+    public static string DeerPopulationInput;
+    public static string WolfPopulationInput;
+    public static string PlantPopulationInput;
+    public static string TimeLengthInput;
 
     // Called when any input field finishes editing
     public void OnInputFinished(string value)
