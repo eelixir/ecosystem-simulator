@@ -6,9 +6,12 @@ public class DeerOOP : OrganismOOP
 {
     private float decreaseTimer = 0f;
     private float decreaseInterval = 1f;
+    private float logTimer = 0f;
+    private float logInterval = 5f; // Set log frequency to 5 seconds
 
     void Start()
     {
+        // Declare variables for the organism
         isAlive = true;
         organismName = "Deer";
         health = 100;
@@ -24,21 +27,28 @@ public class DeerOOP : OrganismOOP
         position = transform.position;
         radius = 5.0f;
 
+        // Set the GameObject's name to the organisms name
+        gameObject.name = organismName + "_" + gameObject.GetInstanceID();
+
         Debug.Log(organismName + " initialized.");
     }
 
     void Update()
     {
+        // Checks if organism is alive
         if (isAlive)
         {
+            // If organism is not alive then decrease population by 1 and set isAlive to false
             if (health <= 0)
             {
+                EnvironmentData.DeerPopulation -= 1;
                 isAlive = false;
             }
 
             Move();
 
             decreaseTimer += Time.deltaTime;
+            logTimer += Time.deltaTime;
 
             if (decreaseTimer >= decreaseInterval)
             {
@@ -55,30 +65,35 @@ public class DeerOOP : OrganismOOP
                 }
 
                 decreaseTimer = 0f;
+            }
 
+            // Log stats at the specified interval
+            if (logTimer >= logInterval)
+            {
                 Debug.Log($"Health: {health}, Stamina: {stamina}, Hunger: {hunger}, Thirst: {thirst}");
+                logTimer = 0f; // Reset log timer
             }
 
             if (stamina <= 0)
             {
                 movementState = "walking";
-                Debug.Log(organismName + " is walking");
             }
             else if (stamina >= 25)
             {
                 movementState = "running";
-                Debug.Log(organismName + " is running");
             }
         }
     }
 
+    // Plant search method
     public void PlantSearch()
     {
         Debug.Log(organismName + " is searching for plants.");
     }
 
+    // Moving method overrided from parent class
     public override void Move()
     {
-        Debug.Log(organismName + " is moving.");
+        // moving
     }
 }

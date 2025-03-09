@@ -24,39 +24,46 @@ public class OrganismOOP : MonoBehaviour
     // Methods
     public virtual void Move()
     {
-        Debug.Log(organismName + " is moving.");
+        // Moving
     }
 
+    // Healing method
     public void Heal()
     {
         Debug.Log(organismName + " healed to " + health);
     }
 
+    // Searching for water method
     public void SearchWater()
     {
         Debug.Log(organismName + " is searching for water.");
     }
 
+    // Eating method
     public void Eat()
     {
         Debug.Log(organismName + " is eating. Hunger level: " + hunger);
     }
 
+    // Drinking method
     public void Drink()
     {
         Debug.Log(organismName + " is drinking. Thirst level: " + thirst);
     }
 
+    // Mating method
     public void Mate()
     {
         Debug.Log(organismName + " is mating.");
     }
 
+    // Born method
     public void Born()
     {
         Debug.Log(organismName + " was born.");
     }
 
+    // Dead method
     public void Dead()
     {
         Debug.Log(organismName + " died.");

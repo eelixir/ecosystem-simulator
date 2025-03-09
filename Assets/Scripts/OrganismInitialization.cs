@@ -3,28 +3,24 @@ using UnityEngine.AI;
 
 public class OrganismInitilisation : MonoBehaviour
 {
+    // Prefabs for each organism
     public GameObject DeerPrefab;
     public GameObject WolfPrefab;
     public GameObject PlantPrefab;
 
-    public static string DeerCount = InputHandler.DeerPopulationInput;
-    public static string WolfCount = InputHandler.WolfPopulationInput;
-    public static string PlantCount = InputHandler.PlantPopulationInput;
-    public int DeerCountInt = int.Parse(DeerCount);
-    public int WolfCountInt = int.Parse(WolfCount);
-    public int PlantCountInt = int.Parse(PlantCount);
+    // Starting populations and time
+    public static int DeerStartingPopulation = 10;
+    public static int WolfStartingPopulation = 10;
+    public static int PlantStartingPopulation = 10;
+    public static float TimeStartingLength = 300;  // Simulation time in seconds
 
-
-    public float cubeHeightOffset = 0f;
-    private Collider platformCollider;
-
-    public float minX = 5f, maxX = 95f;
-    public float minY = 1f, maxY = 1f;
-    public float minZ = 5f, maxZ = 95f;
+    public Collider platformCollider;
+    private float timeRemaining;
+    private bool isSimulationRunning = true;
 
     void Start()
     {
-        // Find the Platform object by its name and get its collider
+         // Find the platform object and its collider
         GameObject platform = GameObject.Find("Platform");
         if (platform == null)
         {
@@ -33,27 +29,61 @@ public class OrganismInitilisation : MonoBehaviour
         }
 
         platformCollider = platform.GetComponent<Collider>();
+        if (platformCollider == null)
+        {
+            Debug.LogError("Platform Collider not found");
+            return;
+        }
 
-        SpawnObjects(DeerPrefab, DeerCountInt);
-        SpawnObjects(WolfPrefab, WolfCountInt);
-        SpawnObjects(PlantPrefab, PlantCountInt);
+        // Initialize the simulation time
+        timeRemaining = TimeStartingLength;
+
+        // Spawn the initial organisms
+        SpawnObjects(DeerPrefab, DeerStartingPopulation);
+        SpawnObjects(WolfPrefab, WolfStartingPopulation);
+        SpawnObjects(PlantPrefab, PlantStartingPopulation);
     }
 
+    void Update()
+    {
+        if (isSimulationRunning)
+        {
+            // Decrease time remaining by the time passed since the last frame
+            timeRemaining -= Time.deltaTime;
+
+            // Check if the simulation has ended
+            if (timeRemaining <= 0)
+            {
+                timeRemaining = 0;
+                isSimulationRunning = false;
+                Debug.Log("Simulation Ended");
+            }
+        }
+    }
+
+    // Method that spawns in the organisms
     void SpawnObjects(GameObject objectPrefab, int count)
     {
         for (int i = 0; i < count; i++)
         {
-            Vector3 spawnPosition = GetRandomPositionOnCube();
+            Vector3 spawnPosition = GetRandomPositionOnPlatform();
             // Check if position is valid
-            if (spawnPosition != Vector3.zero) 
+            if (spawnPosition != Vector3.zero)
             {
                 Instantiate(objectPrefab, spawnPosition, Quaternion.identity);
             }
         }
     }
 
-    Vector3 GetRandomPositionOnCube()
+    // Function that gets a random position on the platform
+    Vector3 GetRandomPositionOnPlatform()
     {
+        if (platformCollider == null)
+        {
+            Debug.LogError("Platform Collider is null");
+            return Vector3.zero;
+        }
+
         // Get the platform object's bounds
         Vector3 platformCenter = platformCollider.bounds.center;
         Vector3 platformSize = platformCollider.bounds.size;
@@ -61,9 +91,7 @@ public class OrganismInitilisation : MonoBehaviour
         // Generate random positions within the platform's bounds
         float x = Random.Range(platformCenter.x - platformSize.x / 2, platformCenter.x + platformSize.x / 2);
         float z = Random.Range(platformCenter.z - platformSize.z / 2, platformCenter.z + platformSize.z / 2);
-
-        // Set y to a constant value of 1
-        float y = 1f;
+        float y = 0;
 
         return new Vector3(x, y, z);
     }
