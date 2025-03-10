@@ -1,50 +1,68 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerControlledMovement : MonoBehaviour
 {
-    // Define variables for movement type speeds and the mouse sensitivity
-    public float moveSpeed = 5f; 
-    public float sprintSpeed = 10f;
-    public float mouseSensitivity = 2f;
+    public float sensitivity;
+    public float normalSpeed;
+    public float sprintSpeed;
+    float currentSpeed;
 
-    private float xRotation = 0f; 
-    private CharacterController controller;
-    private Camera playerCamera;
-
-    private void Start()
+    void Update()
     {
-        // Define the organsim controllers and attach camera at start
-        controller = GetComponent<CharacterController>(); 
-        playerCamera = GetComponentInChildren<Camera>(); 
-        Cursor.lockState = CursorLockMode.Locked; 
         Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        Movement();
+        Rotation();
     }
 
-    private void Update()
+    public void Rotation()
     {
-        // Handle mouse movement for camera look around
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+        // Mouse movement input
+        Vector3 mouseInput = new Vector3(-Input.GetAxis("Mouse Y"), Input.GetAxis("Mouse X"), 0);
+        transform.Rotate(mouseInput * sensitivity);
+        Vector3 eulerRotation = transform.rotation.eulerAngles;
+        transform.rotation = Quaternion.Euler(eulerRotation.x, eulerRotation.y, 0);
+    }
 
-        // Limit the X axis rotation to prevent over-rotation
-        xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+    public void Movement()
+    {
+        // Horizontal and vertical input
+        Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
 
-        // Rotate camera on X-axis and Y-axis
-        playerCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f); 
-        transform.Rotate(Vector3.up * mouseX);
+        // Adjust Z-axis movement
+        if (Input.GetKey(KeyCode.W))
+        {
+            input.z = 1f;
+        }
+        else if (Input.GetKey(KeyCode.S))
+        {
+            input.z = -1f;
+        }
 
-        // Handle movement (WASD keys)
-        float moveX = Input.GetAxis("Horizontal"); 
-        float moveZ = Input.GetAxis("Vertical"); 
+        // Adjust X-axis movement
+        if (Input.GetKey(KeyCode.A))
+        {
+            input.x = -1f;
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            input.x = 1f;
+        }
 
-        Vector3 move = transform.right * moveX + transform.forward * moveZ;
-
-        // Sprint if shift is held down
-        float currentSpeed = Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : moveSpeed;
-
-        controller.Move(move * currentSpeed * Time.deltaTime); 
-
+        // Checks if speed is sprint or normal
+        if (Input.GetKey(KeyCode.LeftShift)) // and stamina > ...
+        {
+            currentSpeed = sprintSpeed;
+        }
+        else
+        {
+            currentSpeed = normalSpeed;
+        }
+        transform.Translate(input * currentSpeed * Time.deltaTime);
     }
 }
+
+
 

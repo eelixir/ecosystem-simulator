@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class WolfOOP : OrganismOOP
 {
+    public Camera WolfCamera;
     private float decreaseTimer = 0f;
     private float decreaseInterval = 1f;
     private float logTimer = 0f;
     private float logInterval = 5f; // Set log frequency to 5 seconds
+    private GameObject CanvasOrganismData;
 
     void Start()
     {
@@ -29,6 +31,10 @@ public class WolfOOP : OrganismOOP
 
         // Set the GameObject's name to the organisms name
         gameObject.name = organismName + "_" + gameObject.GetInstanceID();
+        organismName = gameObject.name;
+
+        // Camera WolfCamera = GameObject.Find(organismName).GetComponent<Camera>();
+        // WolfCamera.enabled = false;
 
         Debug.Log(organismName + " initialized.");
     }
@@ -41,8 +47,21 @@ public class WolfOOP : OrganismOOP
             // If organism is not alive then decrease population by 1 and set isAlive to false
             if (health <= 0)
             {
+                health = 0;
                 EnvironmentData.WolfPopulation -= 1;
                 isAlive = false;
+            }
+            else if (hunger <= 0)
+            {
+                hunger = 0;
+            }
+            else if (thirst <= 0)
+            {
+                thirst = 0;
+            }
+            else if (stamina <= 0)
+            {
+                stamina = 0;
             }
 
             Move();
@@ -97,5 +116,19 @@ public class WolfOOP : OrganismOOP
     public override void Move()
     {
         // moving
+    }
+
+    // Method to detect when FreeCamPlayer left clicks on an orgnism when in range
+    public void OnMouseOver()
+    {
+        // Finds FreeCamPlayer GameObject then determines distance between two objects
+        GameObject freecamobject = GameObject.Find("FreeCamPlayer");
+        float distance = Vector3.Distance(gameObject.transform.position, freecamobject.transform.position);
+
+        if (distance <= 10 && Input.GetMouseButtonDown(0))
+        {
+            Debug.Log("OnMouseOver Working");
+            CanvasOrganismData.GetComponent<Canvas>().enabled = true;
+        }
     }
 }

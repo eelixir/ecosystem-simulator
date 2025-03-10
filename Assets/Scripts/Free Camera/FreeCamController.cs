@@ -4,10 +4,16 @@ using UnityEngine;
 
 public class FreeCamController : MonoBehaviour
 {
-    public float sensitivity;
-    public float normalSpeed;
-    public float sprintSpeed;
+    public static Camera FreeCamera;
+    public float sensitivity = 5;
+    public float normalSpeed = 15;
+    public float sprintSpeed = 25;
     float currentSpeed;
+
+    void Start()
+    {
+        FreeCamera = GameObject.Find("FreeCamPlayer").GetComponent<Camera>();
+    }
 
     void Update()
     {
@@ -39,6 +45,16 @@ public class FreeCamController : MonoBehaviour
         else if (Input.GetKey(KeyCode.LeftControl))
         {
             input.y = -1f;
+        }
+
+        // Adjust Z-axis movement
+        if (Input.GetKey(KeyCode.W))
+        {
+            input.z = 1f;
+        }
+        else if (Input.GetKey(KeyCode.S))
+        {
+            input.z = -1f;
         }
 
         // Adjust X-axis movement

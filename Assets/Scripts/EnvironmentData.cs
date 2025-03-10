@@ -23,7 +23,6 @@ public class EnvironmentData : MonoBehaviour
         {
             // Decrease time remaining by the time passed since the last frame
             TimeRemaining -= Time.deltaTime;
-            Debug.Log($"Time remaining = {TimeRemaining}");
 
             // Check if the simulation has ended
             if (TimeRemaining <= 0)

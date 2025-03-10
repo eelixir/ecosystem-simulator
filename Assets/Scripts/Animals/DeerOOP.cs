@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class DeerOOP : OrganismOOP
 {
+    public Camera DeerCamera;
     private float decreaseTimer = 0f;
     private float decreaseInterval = 1f;
     private float logTimer = 0f;
@@ -29,6 +30,9 @@ public class DeerOOP : OrganismOOP
 
         // Set the GameObject's name to the organisms name
         gameObject.name = organismName + "_" + gameObject.GetInstanceID();
+        organismName = gameObject.name;
+
+        // DeerCamera = GameObject.Find(organismName).GetComponent<Camera>();
 
         Debug.Log(organismName + " initialized.");
     }
@@ -41,12 +45,26 @@ public class DeerOOP : OrganismOOP
             // If organism is not alive then decrease population by 1 and set isAlive to false
             if (health <= 0)
             {
+                health = 0;
                 EnvironmentData.DeerPopulation -= 1;
                 isAlive = false;
+            }
+            else if (hunger <= 0)
+            {
+                hunger = 0;
+            }
+            else if (thirst <= 0)
+            {
+                thirst = 0;
+            }
+            else if (stamina <= 0)
+            {
+                stamina = 0;
             }
 
             Move();
 
+            // Decrease time by the frames that have passed
             decreaseTimer += Time.deltaTime;
             logTimer += Time.deltaTime;
 
@@ -71,7 +89,7 @@ public class DeerOOP : OrganismOOP
             if (logTimer >= logInterval)
             {
                 Debug.Log($"Health: {health}, Stamina: {stamina}, Hunger: {hunger}, Thirst: {thirst}");
-                logTimer = 0f; // Reset log timer
+                logTimer = 0f; 
             }
 
             if (stamina <= 0)
@@ -95,5 +113,18 @@ public class DeerOOP : OrganismOOP
     public override void Move()
     {
         // moving
+    }
+    
+    // Method to detect when FreeCamPlayer left clicks on an orgnism when in range
+    public void OnMouseOver()
+    {
+        // Finds FreeCamPlayer GameObject then determines distance between two objects
+        GameObject freecamobject = GameObject.Find("FreeCamPlayer");
+        float distance = Vector3.Distance(gameObject.transform.position, freecamobject.transform.position);
+
+        if (distance <= 10 && Input.GetMouseButtonDown(0))
+        {
+            Debug.Log("OnMouseOver Working");
+        }
     }
 }
