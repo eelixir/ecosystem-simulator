@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2338745874980513666
 Transform:
   m_ObjectHideFlags: 0
@@ -336,7 +336,6 @@ MonoBehaviour:
   skills: []
   radius: 0
   DeerCamera: {fileID: 0}
-  freecamobject: {fileID: 0}
 --- !u!65 &5150823425123065962
 BoxCollider:
   m_ObjectHideFlags: 0

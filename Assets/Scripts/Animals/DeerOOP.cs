@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class DeerOOP : OrganismOOP
 {
-    public Camera DeerCamera;
+    public GameObject DeerCamera;
+    public GameObject OrganismDataUI;
+    public GameObject CanvasOrganismDataMain;
     private float decreaseTimer = 0f;
     private float decreaseInterval = 1f;
     private float logTimer = 0f;
@@ -13,6 +15,9 @@ public class DeerOOP : OrganismOOP
     void Start()
     {
         // Declare variables for the organism
+        DeerCamera = GameObject.Find("Camera");
+        OrganismDataUI = GameObject.Find("CanvasOrganismData");
+        OrganismDataUI.SetActive(false);
         isAlive = true;
         organismName = "Deer";
         health = 100;
@@ -31,8 +36,6 @@ public class DeerOOP : OrganismOOP
         // Set the GameObject's name to the organisms name
         gameObject.name = organismName + "_" + gameObject.GetInstanceID();
         organismName = gameObject.name;
-
-        // DeerCamera = GameObject.Find(organismName).GetComponent<Camera>();
 
         Debug.Log(organismName + " initialized.");
     }
@@ -125,6 +128,12 @@ public class DeerOOP : OrganismOOP
         if (distance <= 10 && Input.GetMouseButtonDown(0))
         {
             Debug.Log("OnMouseOver Working");
+            // Enables Organism Data Canvas UI
+            if (OrganismDataUI.activeSelf != true)
+            {
+                // Find OrganismDataUI GameObject
+                OrganismDataUI.SetActive(true);
+            }
         }
     }
 }
