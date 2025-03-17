@@ -68,9 +68,11 @@
     <Compile Include="Assets\Scripts\Animals\WolfOOP.cs" />
     <Compile Include="Assets\Scripts\EnvironmentData.cs" />
     <Compile Include="Assets\Scripts\Animals\OrganismOOP.cs" />
+    <Compile Include="Assets\Scripts\CanvasOrganismDataMain Reference.cs" />
     <Compile Include="Assets\Scripts\UI\CanvasOrganismDataUpdater.cs" />
     <Compile Include="Assets\Scripts\Animals\DeerOOP.cs" />
     <Compile Include="Assets\Scripts\OrganismInitialization.cs" />
+    <Compile Include="Assets\Scripts\CanvasReference.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

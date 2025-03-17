@@ -4,16 +4,17 @@ using UnityEngine;
 
 public class WolfOOP : OrganismOOP
 {
-    public Camera WolfCamera;
+    public GameObject WolfCamera;
+    public static bool CanvasOrganismDataUI = false;
     private float decreaseTimer = 0f;
     private float decreaseInterval = 1f;
     private float logTimer = 0f;
     private float logInterval = 5f; // Set log frequency to 5 seconds
-    private GameObject CanvasOrganismData;
 
     void Start()
     {
         // Declare variables for the organism
+        WolfCamera = GameObject.Find("Camera");
         isAlive = true;
         organismName = "Wolf";
         health = 100;
@@ -32,9 +33,6 @@ public class WolfOOP : OrganismOOP
         // Set the GameObject's name to the organisms name
         gameObject.name = organismName + "_" + gameObject.GetInstanceID();
         organismName = gameObject.name;
-
-        // Camera WolfCamera = GameObject.Find(organismName).GetComponent<Camera>();
-        // WolfCamera.enabled = false;
 
         Debug.Log(organismName + " initialized.");
     }
@@ -128,7 +126,7 @@ public class WolfOOP : OrganismOOP
         if (distance <= 10 && Input.GetMouseButtonDown(0))
         {
             Debug.Log("OnMouseOver Working");
-            CanvasOrganismData.GetComponent<Canvas>().enabled = true;
+            CanvasOrganismDataUI = true;
         }
     }
 }

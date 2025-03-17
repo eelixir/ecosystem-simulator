@@ -4,13 +4,13 @@ using UnityEngine.UI;
 public class CanvasOrganismDataUpdater : MonoBehaviour
 {
     // Text components for each variable
-    public Text OrganismNameValue;
-    public Text HealthValue;
-    public Text HungerValue;
-    public Text ThirstValue;
-    public Text StaminaValue;
-    public Text MovementValue;
-    public Text BehaviourValue;
+    public static Text OrganismNameValue;
+    public static Text HealthValue;
+    public static Text HungerValue;
+    public static Text ThirstValue;
+    public static Text StaminaValue;
+    public static Text MovementValue;
+    public static Text BehaviourValue;
 
 
     // Update is called once per frame
@@ -19,7 +19,7 @@ public class CanvasOrganismDataUpdater : MonoBehaviour
 
     }
 
-    public void UIOrganismDataDisplay(string organismName, int health, int hunger, int thirst, int stamina, string movementState, string behaviouralState)
+    public static void UIOrganismDataDisplay(string organismName, int health, int hunger, int thirst, int stamina, string movementState, string behaviouralState)
     {
         // Update the Text UI to show the current population and time remaining, obtaining data from EnvironmentData script
         OrganismNameValue.text = organismName.ToString();
