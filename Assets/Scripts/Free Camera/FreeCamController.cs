@@ -17,10 +17,18 @@ public class FreeCamController : MonoBehaviour
 
     void Update()
     {
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
-        Movement();
-        Rotation();
+        if (DeerOOP.FreeCamControllerUpdater || WolfOOP.FreeCamControllerUpdater)
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.Confined;
+        }
+        else
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            Movement();
+            Rotation();
+        }
     }
 
     public void Rotation()

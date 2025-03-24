@@ -6,6 +6,7 @@ public class WolfOOP : OrganismOOP
 {
     public GameObject WolfCamera;
     public static bool CanvasOrganismDataUI = false;
+    public static bool FreeCamControllerUpdater = false;
     private float decreaseTimer = 0f;
     private float decreaseInterval = 1f;
     private float logTimer = 0f;
@@ -127,6 +128,7 @@ public class WolfOOP : OrganismOOP
         {
             Debug.Log("OnMouseOver Working");
             CanvasOrganismDataUI = true;
+            FreeCamControllerUpdater = true;
         }
     }
 }

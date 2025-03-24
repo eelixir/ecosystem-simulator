@@ -62,6 +62,11 @@ public class PlayerControlledMovement : MonoBehaviour
         }
         transform.Translate(input * currentSpeed * Time.deltaTime);
     }
+
+    public void Activate()
+    {
+        Debug.Log("control state activated");
+    }
 }
 
 

@@ -6,6 +6,7 @@ public class DeerOOP : OrganismOOP
 {
     public GameObject DeerCamera;
     public static bool CanvasOrganismDataUI = false;
+    public static bool FreeCamControllerUpdater = false;
     private float decreaseTimer = 0f;
     private float decreaseInterval = 1f;
     private float logTimer = 0f;
@@ -126,6 +127,7 @@ public class DeerOOP : OrganismOOP
         {
             Debug.Log("OnMouseOver Working");
             CanvasOrganismDataUI = true;
+            FreeCamControllerUpdater = true;
         }
     }
 }

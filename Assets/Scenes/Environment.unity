@@ -454,13 +454,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b7659ea0b3f89e478877b35b6b521ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OrganismNameValue: {fileID: 2029629387}
-  HealthValue: {fileID: 1669755089}
-  HungerValue: {fileID: 2004951577}
-  ThirstValue: {fileID: 1929315408}
-  StaminaValue: {fileID: 1156973565}
-  MovementValue: {fileID: 2007787513}
-  BehaviourValue: {fileID: 774208471}
 --- !u!1 &72190671
 GameObject:
   m_ObjectHideFlags: 0
@@ -993,17 +986,17 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
-        m_MethodName: gameInitiationEnvironemnt
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 1
+        m_CallState: 2
 --- !u!114 &474780520
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3017,9 +3010,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
-        m_MethodName: gameInitiationEnvironemnt
+      - m_Target: {fileID: 1807697440}
+        m_TargetAssemblyTypeName: reference, Assembly-CSharp
+        m_MethodName: Control
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3350,9 +3343,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
-        m_MethodName: gameInitiationEnvironemnt
+      - m_Target: {fileID: 1807697440}
+        m_TargetAssemblyTypeName: reference, Assembly-CSharp
+        m_MethodName: Exit
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3361,7 +3354,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 1
+        m_CallState: 2
 --- !u!114 &1976812338
 MonoBehaviour:
   m_ObjectHideFlags: 0
