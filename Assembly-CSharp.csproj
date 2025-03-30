@@ -55,6 +55,7 @@
     <UnityVersion>6000.0.29f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Analyzer Include="C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.0.29f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.SourceGenerators.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.0.29f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.0.29f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
@@ -68,7 +69,6 @@
     <Compile Include="Assets\Scripts\Animals\WolfOOP.cs" />
     <Compile Include="Assets\Scripts\EnvironmentData.cs" />
     <Compile Include="Assets\Scripts\Animals\OrganismOOP.cs" />
-    <Compile Include="Assets\Scripts\UI\CanvasOrganismDataUpdater.cs" />
     <Compile Include="Assets\Scripts\Animals\DeerOOP.cs" />
     <Compile Include="Assets\Scripts\OrganismInitialization.cs" />
     <Compile Include="Assets\Scripts\CanvasReference.cs" />

@@ -12,6 +12,14 @@ public class DeerOOP : OrganismOOP
     private float logTimer = 0f;
     private float logInterval = 5f; // Set log frequency to 5 seconds
 
+    public static string selectedDeerName;
+    public static float selectedDeerHealth;
+    public static float selectedDeerHunger;
+    public static float selectedDeerThirst;
+    public static float selectedDeerStamina;
+    public static string selectedDeerMovementState;
+    public static string selectedDeerBehavioralState;
+
     void Start()
     {
         // Declare variables for the organism
@@ -115,17 +123,25 @@ public class DeerOOP : OrganismOOP
     {
         // moving
     }
-    
+
     // Method to detect when FreeCamPlayer left clicks on an orgnism when in range
     public void OnMouseOver()
     {
-        // Finds FreeCamPlayer GameObject then determines distance between two objects
         GameObject freecamobject = GameObject.Find("FreeCamPlayer");
         float distance = Vector3.Distance(gameObject.transform.position, freecamobject.transform.position);
 
         if (distance <= 10 && Input.GetMouseButtonDown(0))
         {
-            Debug.Log("OnMouseOver Working");
+            // Set static variables with current deer's info
+            selectedDeerName = organismName;
+            selectedDeerHealth = health;
+            selectedDeerHunger = hunger;
+            selectedDeerThirst = thirst;
+            selectedDeerStamina = stamina;
+            selectedDeerMovementState = movementState;
+            selectedDeerBehavioralState = behaviouralState;
+
+            // Set the CanvasOrganismDataUI flag to true
             CanvasOrganismDataUI = true;
             FreeCamControllerUpdater = true;
         }

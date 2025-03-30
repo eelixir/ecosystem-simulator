@@ -12,6 +12,14 @@ public class WolfOOP : OrganismOOP
     private float logTimer = 0f;
     private float logInterval = 5f; // Set log frequency to 5 seconds
 
+    public static string selectedWolfName;
+    public static int selectedWolfHealth;
+    public static int selectedWolfHunger;
+    public static int selectedWolfThirst;
+    public static int selectedWolfStamina;
+    public static string selectedWolfMovementState;
+    public static string selectedWolfBehavioralState;
+
     void Start()
     {
         // Declare variables for the organism
@@ -120,13 +128,21 @@ public class WolfOOP : OrganismOOP
     // Method to detect when FreeCamPlayer left clicks on an orgnism when in range
     public void OnMouseOver()
     {
-        // Finds FreeCamPlayer GameObject then determines distance between two objects
         GameObject freecamobject = GameObject.Find("FreeCamPlayer");
         float distance = Vector3.Distance(gameObject.transform.position, freecamobject.transform.position);
 
         if (distance <= 10 && Input.GetMouseButtonDown(0))
         {
-            Debug.Log("OnMouseOver Working");
+            // Set static variables with current wolf's info
+            selectedWolfName = organismName;
+            selectedWolfHealth = health;
+            selectedWolfHunger = hunger;
+            selectedWolfThirst = thirst;
+            selectedWolfStamina = stamina;
+            selectedWolfMovementState = movementState;
+            selectedWolfBehavioralState = behaviouralState;
+
+            // Set the CanvasOrganismDataUI flag to true
             CanvasOrganismDataUI = true;
             FreeCamControllerUpdater = true;
         }
