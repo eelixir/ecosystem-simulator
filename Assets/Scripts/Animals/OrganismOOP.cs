@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class OrganismOOP : MonoBehaviour
 {
@@ -20,52 +21,59 @@ public class OrganismOOP : MonoBehaviour
     public string behaviouralState;
     public string[] skills;
     public float radius;
+    public NavMeshAgent agent;
 
-    // Methods
-    public virtual void Move()
-    {
-        // Moving
-    }
-
-    // Healing method
-    public void Heal()
-    {
-        Debug.Log(organismName + " healed to " + health);
-    }
 
     // Searching for water method
-    public void SearchWater()
+    public void SearchForWater()
     {
-        Debug.Log(organismName + " is searching for water.");
+        // Only search for water every 2 seconds to optimize performance
+        if (Time.time % 2f < Time.deltaTime)
+        {
+            GameObject closestWater = null;
+            float closestDistance = Mathf.Infinity;
+
+            // Find all water in the scene
+            foreach (GameObject water in GameObject.FindGameObjectsWithTag("Water"))
+            {
+                // Check distance
+                float distance = Vector3.Distance(transform.position, water.transform.position);
+                if (distance < closestDistance && distance <= 100f)
+                {
+                    closestDistance = distance;
+                    closestWater = water;
+                }
+            }
+
+            // If we found water
+            if (closestWater != null)
+            {
+                // Check if we're close enough to water
+                if (closestDistance <= agent.stoppingDistance * 1.5f)
+                {
+                    behaviouralState = "drinking";
+                    agent.isStopped = true;
+                    return;
+                }
+
+                // Move toward water
+                agent.isStopped = false;
+                agent.speed = (stamina > staminaMax / 2) ? 5f : 3f; // Faster if high stamina
+                agent.SetDestination(closestWater.transform.position);
+            }
+            else
+            {
+                // If no water found then go idle
+                behaviouralState = "idle";
+                agent.isStopped = true;
+            }
+        }
     }
 
-    // Eating method
-    public void Eat()
-    {
-        Debug.Log(organismName + " is eating. Hunger level: " + hunger);
-    }
-
-    // Drinking method
-    public void Drink()
-    {
-        Debug.Log(organismName + " is drinking. Thirst level: " + thirst);
-    }
-
-    // Mating method
-    public void Mate()
-    {
-        Debug.Log(organismName + " is mating.");
-    }
 
     // Born method
     public void Born()
     {
         Debug.Log(organismName + " was born.");
-    }
-
-    // Dead method
-    public void Dead()
-    {
-        Debug.Log(organismName + " died.");
     }
 }

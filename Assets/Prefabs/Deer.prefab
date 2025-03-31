@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1547787993098255093}
   - component: {fileID: 3163779518777037309}
   - component: {fileID: 9196970034025862487}
+  - component: {fileID: 8460335703815490381}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -137,6 +138,21 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &8460335703815490381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2025617984432945007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b20509d7989c4541b67b8a140119998, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sensitivity: 5
+  normalSpeed: 5
+  sprintSpeed: 10
 --- !u!1001 &4208793582359499997
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -191,6 +207,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: f1d149970046cdd4f9c859e676025266, type: 3}
       propertyPath: m_Name
+      value: Deer
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: f1d149970046cdd4f9c859e676025266, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: f1d149970046cdd4f9c859e676025266, type: 3}
+      propertyPath: m_TagString
       value: Deer
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -335,7 +359,11 @@ MonoBehaviour:
   behaviouralState: 
   skills: []
   radius: 0
-  DeerCamera: {fileID: 0}
+  DeerCamera: {fileID: 2025617984432945007}
+  agent: {fileID: 9008457656639571502}
+  detectionLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!65 &5150823425123065962
 BoxCollider:
   m_ObjectHideFlags: 0

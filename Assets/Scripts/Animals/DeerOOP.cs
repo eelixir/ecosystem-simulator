@@ -1,27 +1,38 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class DeerOOP : OrganismOOP
 {
     public GameObject DeerCamera;
-    public static bool CanvasOrganismDataUI = false;
-    public static bool FreeCamControllerUpdater = false;
     private float decreaseTimer = 0f;
     private float decreaseInterval = 1f;
     private float logTimer = 0f;
-    private float logInterval = 5f; // Set log frequency to 5 seconds
+    private float logInterval = 1f; // Set log frequency to 5 seconds
 
+    // Organism Data UI
+    public static bool CanvasOrganismDataUI = false;
+    public static bool FreeCamControllerUpdater = false;
     public static string selectedDeerName;
-    public static float selectedDeerHealth;
-    public static float selectedDeerHunger;
-    public static float selectedDeerThirst;
-    public static float selectedDeerStamina;
+    public static int selectedDeerHealth;
+    public static int selectedDeerHunger;
+    public static int selectedDeerThirst;
+    public static int selectedDeerStamina;
     public static string selectedDeerMovementState;
     public static string selectedDeerBehavioralState;
 
+    // Pathfinding
+    public LayerMask detectionLayer;
+    private bool wolfDetected = false;
+    private bool plantDetected = false;
+    private bool mateDetected = false;
+    private bool waterDetected = false;
+
+
     void Start()
     {
+        agent = GetComponent<NavMeshAgent>();
         // Declare variables for the organism
         DeerCamera = GameObject.Find("Camera");
         isAlive = true;
@@ -51,12 +62,17 @@ public class DeerOOP : OrganismOOP
         // Checks if organism is alive
         if (isAlive)
         {
+            DetectSurroundings();
+            BehaviourUpdating();
+            Pathfinding();
+
             // If organism is not alive then decrease population by 1 and set isAlive to false
             if (health <= 0)
             {
                 health = 0;
                 EnvironmentData.DeerPopulation -= 1;
                 isAlive = false;
+                // Destroy(gameObject);
             }
             else if (hunger <= 0)
             {
@@ -71,7 +87,6 @@ public class DeerOOP : OrganismOOP
                 stamina = 0;
             }
 
-            Move();
 
             // Decrease time by the frames that have passed
             decreaseTimer += Time.deltaTime;
@@ -79,7 +94,7 @@ public class DeerOOP : OrganismOOP
 
             if (decreaseTimer >= decreaseInterval)
             {
-                if (behaviouralState == "idle")
+                if (health >= 0)
                 {
                     hunger -= 1;
                     thirst -= 1;
@@ -112,19 +127,245 @@ public class DeerOOP : OrganismOOP
         }
     }
 
-    // Plant search method
-    public void PlantSearch()
+    // Checks to see if an object with the tags Wolf, Plant, Mate or Water are in the radius of the current gameObject
+    void DetectSurroundings()
     {
-        Debug.Log(organismName + " is searching for plants.");
+        // Resets detection states
+        wolfDetected = false;
+        plantDetected = false;
+        mateDetected = false;
+        waterDetected = false;
+
+        Collider[] colliders = Physics.OverlapSphere(transform.position, radius, detectionLayer);
+
+        foreach (Collider col in colliders)
+        {
+            if (col.CompareTag("Wolf"))
+            {
+                wolfDetected = true;
+            }
+            else if (col.CompareTag("Plant"))
+            {
+                plantDetected = true;
+            }
+            else if (col.CompareTag("Mate"))
+            {
+                mateDetected = true;
+            }
+            else if (col.CompareTag("Water"))
+            {
+                waterDetected = true;
+            }
+        }
     }
 
-    // Moving method overrided from parent class
-    public override void Move()
+    // Updated the Behavioural State depending on certain conditions
+    void BehaviourUpdating()
     {
-        // moving
+        if (wolfDetected)
+        {
+            // Prioritises running from wolf
+            behaviouralState = "runFromWolf";
+            return;
+        }
+
+        if ((hunger <= (hungerMax / 2)) && (hunger < thirst))
+        {
+            behaviouralState = "searchPlant";
+        }
+        else if ((thirst <= (thirstMax / 2)) && (thirst < hunger))
+        {
+            behaviouralState = "searchWater";
+        }
+        else if ((thirst <= (thirstMax / 2)) && (hunger <= (hungerMax / 2) && thirst == hunger))
+        {
+            behaviouralState = "searchWater";
+        }
+        else if (waterDetected && plantDetected)
+        {
+            if (thirst <= hunger)
+            {
+                behaviouralState = "drinking";
+            }
+            else
+            {
+                behaviouralState = "eating";
+            }
+        }
+        else if (plantDetected)
+        {
+            behaviouralState = "eating";
+        }
+        else if (waterDetected)
+        {
+            behaviouralState = "drinking";
+        }
+        else if ((hunger > (hungerMax / 2)) && (thirst > (thirstMax / 2)) && (stamina > (staminaMax / 2)))
+        {
+            behaviouralState = "searchMate";
+        }
+        else if (mateDetected && (hunger > (hungerMax / 2)) && (thirst > (thirstMax / 2)))
+        {
+            behaviouralState = "mating";
+        }
+        else
+        {
+            behaviouralState = "idle";
+            Debug.Log(organismName + " is idle.");
+        }
     }
 
-    // Method to detect when FreeCamPlayer left clicks on an orgnism when in range
+    void Pathfinding()
+    {
+        switch (behaviouralState)
+        {
+            case "runFromWolf":
+                // Pathfinding to escape from wolf
+                break;
+
+            case "searchPlant":
+                // Pathfinding to find plant
+                SearchForPlant();
+                break;
+
+            case "searchWater":
+                // Pathfinding to find water
+                SearchForWater();
+                break;
+
+            case "searchMate":
+                // Pathfinding to find a mate
+                SearchForMate();
+                break;
+
+            case "eating":
+                // Eating behavior
+                break;
+
+            case "drinking":
+                // Drinking behavior
+                break;
+
+            case "mating":
+                // Mating behavior
+                break;
+
+            case "idle":
+                // Pathfinding for random movement 
+                break;
+
+            default:
+                Debug.LogError("Error: " + organismName + " has an unrecognized behaviouralState.");
+                break;
+        }
+    }
+
+    void SearchForPlant()
+    {
+        // Only search for plants every 2 seconds to optimize performance
+        if (Time.time % 2f < Time.deltaTime)
+        {
+            GameObject closestPlant = null;
+            float closestDistance = Mathf.Infinity;
+
+            // Find all plant in the scene
+            foreach (GameObject plant in GameObject.FindGameObjectsWithTag("Plant"))
+            {
+                // Check distance
+                float distance = Vector3.Distance(transform.position, plant.transform.position);
+                if (distance < closestDistance && distance <= 100f)
+                {
+                    closestDistance = distance;
+                    closestPlant = plant;
+                }
+            }
+
+            // If we found a plant
+            if (closestPlant != null)
+            {
+                // Check if we're close enough to plant
+                if (closestDistance <= agent.stoppingDistance * 1.5f)
+                {
+                    behaviouralState = "eating";
+                    agent.isStopped = true;
+                    return;
+                }
+
+                // Move toward plant
+                agent.isStopped = false;
+                agent.speed = (stamina > staminaMax / 2) ? 5f : 3f; // Faster if high stamina
+                agent.SetDestination(closestPlant.transform.position);
+            }
+            else
+            {
+                // If no plant found then go idle
+                behaviouralState = "idle";
+                agent.isStopped = true;
+            }
+        }
+    }
+
+
+    void SearchForMate()
+    {
+        // Only search for mates every 2 seconds to optimize performance
+        if (Time.time % 2f < Time.deltaTime) 
+        {
+            GameObject closestDeer = null;
+            float closestDistance = Mathf.Infinity;
+
+            // Find all deer in the scene
+            foreach (GameObject deer in GameObject.FindGameObjectsWithTag("Deer"))
+            {
+                // Skip self and inactive deer
+                if (deer == gameObject || !deer.activeInHierarchy)
+                {
+                    continue;
+                }
+
+                // Skip deer that are busy
+                DeerOOP potentialMate = deer.GetComponent<DeerOOP>();
+                if ((potentialMate != null) && (potentialMate.behaviouralState == "mating" || potentialMate.behaviouralState == "runFromWolf"))
+                {
+                    continue;
+                }
+            
+                // Check distance
+                float distance = Vector3.Distance(transform.position, deer.transform.position);
+                if (distance < closestDistance && distance <= 100f)
+                {
+                    closestDistance = distance;
+                    closestDeer = deer;
+                }
+            }
+
+            // If we found a mate
+            if (closestDeer != null)
+            {
+                // Check if we're close enough to mate
+                if (closestDistance <= agent.stoppingDistance * 1.5f)
+                {
+                    behaviouralState = "mating";
+                    agent.isStopped = true;
+                    return;
+                }
+
+                // Move toward mate
+                agent.isStopped = false;
+                agent.speed = (stamina > staminaMax / 2) ? 5f : 3f; // Faster if high stamina
+                agent.SetDestination(closestDeer.transform.position);
+            }
+            else
+            {
+                // If no mate found then go idle
+                behaviouralState = "idle";
+                agent.isStopped = true;
+            }
+        }
+    }
+
+
+    // Method to detect when FreeCamPlayer left clicks on an organism when in range
     public void OnMouseOver()
     {
         GameObject freecamobject = GameObject.Find("FreeCamPlayer");
@@ -141,9 +382,10 @@ public class DeerOOP : OrganismOOP
             selectedDeerMovementState = movementState;
             selectedDeerBehavioralState = behaviouralState;
 
-            // Set the CanvasOrganismDataUI flag to true
+            // Set the CanvasOrganismDataUI to true
             CanvasOrganismDataUI = true;
             FreeCamControllerUpdater = true;
         }
     }
 }
+

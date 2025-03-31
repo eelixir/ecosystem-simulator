@@ -14,11 +14,6 @@ public class reference : MonoBehaviour
     public Text organismMovementStateText;
     public Text organismBehavioralStateText;
 
-    void Start()
-    {
-        // Initial setup, if necessary
-    }
-
     void Update()
     {
         if (DeerOOP.CanvasOrganismDataUI || WolfOOP.CanvasOrganismDataUI)
@@ -31,7 +26,7 @@ public class reference : MonoBehaviour
         }
         else
         {
-            // Deactivate canvas if neither flag is true
+            // Deactivate canvas if not true
             CanvasOrganismData.SetActive(false);
         }
     }
@@ -63,9 +58,7 @@ public class reference : MonoBehaviour
         }
     }
 
-    // Exit method to close the UI and reset relevant flags
-
-
+    // Exit method to close the UI and reset cursor
     public void Exit()
     {
         DeerOOP.CanvasOrganismDataUI = false;
@@ -77,3 +70,4 @@ public class reference : MonoBehaviour
     }
 
 }
+
