@@ -30,7 +30,7 @@ public class WolfOOP : OrganismOOP
 
     public float distanceToDeer;
     public float distanceToMate;
-
+    public float distanceToWater;
 
 
     void Start()
@@ -314,6 +314,53 @@ public class WolfOOP : OrganismOOP
                 agent.isStopped = true;
             }
         }
+    }
+
+    public void SearchForWater()
+    {
+        // Only search for water every 2 seconds to optimize performance
+        if (Time.time % 2f < Time.deltaTime)
+        {
+            GameObject closestWater = null;
+            float closestDistanceToWater = Mathf.Infinity;
+
+            // Find all water in the scene
+            foreach (GameObject water in GameObject.FindGameObjectsWithTag("Water"))
+            {
+                // Check distance
+                float distance = Vector3.Distance(transform.position, water.transform.position);
+                if (distance < closestDistanceToWater && distance <= 100f)
+                {
+                    closestDistanceToWater = distance;
+                    distanceToWater = closestDistanceToWater;
+                    closestWater = water;
+                }
+            }
+
+            // If we found water
+            if (closestWater != null)
+            {
+                // Check if we're close enough to water
+                if (closestDistanceToWater <= agent.stoppingDistance * 1.5f)
+                {
+                    behaviouralState = "drinking";
+                    agent.isStopped = true;
+                    return;
+                }
+
+                // Move toward water
+                agent.isStopped = false;
+                agent.speed = (stamina > staminaMax / 2) ? 5f : 3f; // Faster if high stamina
+                agent.SetDestination(closestWater.transform.position);
+            }
+            else
+            {
+                // If no water found then go idle
+                behaviouralState = "idle";
+                agent.isStopped = true;
+            }
+        }
+
     }
 
 
