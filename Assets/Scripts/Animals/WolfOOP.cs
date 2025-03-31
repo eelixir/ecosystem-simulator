@@ -28,11 +28,15 @@ public class WolfOOP : OrganismOOP
     private bool mateDetected = false;
     private bool waterDetected = false;
 
+    public float distanceToDeer;
+    public float distanceToMate;
+
+
 
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
         // Declare variables for the organism
+        agent = GetComponent<NavMeshAgent>();
         WolfCamera = GameObject.Find("Camera");
         isAlive = true;
         organismName = "Wolf";

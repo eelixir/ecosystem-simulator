@@ -24,16 +24,15 @@ public class DeerOOP : OrganismOOP
 
     // Pathfinding
     public LayerMask detectionLayer;
-    private bool wolfDetected = false;
-    private bool plantDetected = false;
-    private bool mateDetected = false;
-    private bool waterDetected = false;
-    
+    public float distanceToWolf;
+    public float distanceToPlant;
+    public float distanceToMate;
+
 
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
         // Declare variables for the organism
+        agent = GetComponent<NavMeshAgent>();
         DeerCamera = GameObject.Find("Camera");
         isAlive = true;
         organismName = "Deer";
@@ -62,7 +61,6 @@ public class DeerOOP : OrganismOOP
         // Checks if organism is alive
         if (isAlive)
         {
-            DetectSurroundings();
             BehaviourUpdating();
             Pathfinding();
 
@@ -127,61 +125,29 @@ public class DeerOOP : OrganismOOP
         }
     }
 
-    // Checks to see if an object with the tags Wolf, Plant, Mate or Water are in the radius of the current gameObject
-    void DetectSurroundings()
-    {
-        // Resets detection states
-        wolfDetected = false;
-        plantDetected = false;
-        mateDetected = false;
-        waterDetected = false;
-
-        Collider[] colliders = Physics.OverlapSphere(transform.position, radius, detectionLayer);
-
-        foreach (Collider col in colliders)
-        {
-            if (col.CompareTag("Wolf"))
-            {
-                wolfDetected = true;
-            }
-            else if (col.CompareTag("Plant"))
-            {
-                plantDetected = true;
-            }
-            else if (col.CompareTag("Mate"))
-            {
-                mateDetected = true;
-            }
-            else if (col.CompareTag("Water"))
-            {
-                waterDetected = true;
-            }
-        }
-    }
 
     // Updated the Behavioural State depending on certain conditions
     void BehaviourUpdating()
     {
-        if (wolfDetected)
+        if (distanceToWolf < radius)
         {
             // Prioritises running from wolf
             behaviouralState = "runFromWolf";
             return;
         }
-
-        if ((hunger <= (hungerMax / 2)) && (hunger < thirst))
+        else if ((hunger <= (hungerMax / 2)) && (hunger < thirst) && (distanceToPlant > 1f))
         {
             behaviouralState = "searchPlant";
         }
-        else if ((thirst <= (thirstMax / 2)) && (thirst < hunger))
+        else if ((thirst <= (thirstMax / 2)) && (thirst < hunger) && (distanceToWater > 1f))
         {
             behaviouralState = "searchWater";
         }
-        else if ((thirst <= (thirstMax / 2)) && (hunger <= (hungerMax / 2) && thirst == hunger))
+        else if ((thirst <= (thirstMax / 2)) && (hunger <= (hungerMax / 2) && (thirst == hunger)) && (distanceToWater > 1f))
         {
             behaviouralState = "searchWater";
         }
-        else if (waterDetected && plantDetected && agent.isStopped)
+        else if ((distanceToWater <= 1f) && (distanceToPlant <= 1f))
         {
             if (thirst <= hunger)
             {
@@ -193,27 +159,27 @@ public class DeerOOP : OrganismOOP
                 behaviouralState = "eating";
             }
         }
-        else if (plantDetected && (agent.isStopped))
+        else if (distanceToPlant <= 1f)
         {
             behaviouralState = "eating";
         }
-        else if (waterDetected && (agent.isStopped))
+        else if (distanceToWater <= 1f)
         {
             behaviouralState = "drinking";
             return;
         }
-        else if ((hunger > (hungerMax / 2)) && (thirst > (thirstMax / 2)) && (stamina > (staminaMax / 2)))
+        else if ((hunger > (hungerMax / 2)) && (thirst > (thirstMax / 2)) && (stamina > (staminaMax / 2)) && (distanceToMate > 1f))
         {
             behaviouralState = "searchMate";
         }
-        else if (mateDetected && (hunger > (hungerMax / 2)) && (thirst > (thirstMax / 2)) && (agent.isStopped))
+        else if ((hunger > (hungerMax / 2)) && (thirst > (thirstMax / 2)) && (distanceToMate <= 1f))
         {
             behaviouralState = "mating";
         }
         else
         {
             behaviouralState = "idle";
-            Debug.Log(organismName + " is idle.");
+            Debug.Log(organismName + " is idle. Possible problem!");
         }
     }
 
@@ -249,6 +215,10 @@ public class DeerOOP : OrganismOOP
                 if (decreaseTimer >= decreaseInterval)
                 {
                     hunger += 10;
+                    if (hunger > hungerMax)
+                    {
+                        hunger = hungerMax;
+                    }
                     decreaseTimer = 0f;
                 }
                 break;
@@ -261,6 +231,10 @@ public class DeerOOP : OrganismOOP
                 if (decreaseTimer >= decreaseInterval)
                 {
                     thirst += 10;
+                    if (thirst > thirstMax)
+                    {
+                        thirst = thirstMax;
+                    }
                     decreaseTimer = 0f;
                 }
                 break;
@@ -274,39 +248,105 @@ public class DeerOOP : OrganismOOP
                 break;
 
             default:
-                Debug.LogError("Error: " + organismName + " has an unrecognized behaviouralState.");
+                Debug.LogError("Error: " + organismName + " has an unrecognized behaviouralState. ");
                 break;
         }
     }
 
-
-    void RunFromWolf()
+    public void Detection()
     {
-        // Only search for plants every 2 seconds to optimize performance
+        // Only search for objects every 2 seconds to optimize performance
         if (Time.time % 2f < Time.deltaTime)
         {
+            GameObject closestWolf = null;
+            float closestDistanceToWolf = Mathf.Infinity;
             GameObject closestPlant = null;
-            float closestDistance = Mathf.Infinity;
+            float closestDistanceToPlant = Mathf.Infinity;
+            GameObject closestDeer = null;
+            float closestDistanceToMate = Mathf.Infinity;
+
+            // Find all wolves in the scene
+            foreach (GameObject wolf in GameObject.FindGameObjectsWithTag("Wolf"))
+            {
+                // Check distance
+                float distance = Vector3.Distance(transform.position, wolf.transform.position);
+                if (distance < closestDistanceToWolf && distance <= 100f)
+                {
+                    closestDistanceToWolf = distance;
+                    distanceToWolf = closestDistanceToWolf;
+                    closestWolf = wolf;
+                }
+            }
 
             // Find all plant in the scene
-            foreach (GameObject plant in GameObject.FindGameObjectsWithTag("Wolf"))
+            foreach (GameObject plant in GameObject.FindGameObjectsWithTag("Plant"))
             {
                 // Check distance
                 float distance = Vector3.Distance(transform.position, plant.transform.position);
-                if (distance < closestDistance && distance <= 100f)
+                if (distance < closestDistanceToPlant && distance <= 100f)
                 {
-                    closestDistance = distance;
+                    closestDistanceToPlant = distance;
+                    distanceToPlant = closestDistanceToPlant;
                     closestPlant = plant;
                 }
             }
 
-            // If we found a plant
-            if (closestPlant != null)
+            // Find all deer in the scene
+            foreach (GameObject deer in GameObject.FindGameObjectsWithTag("Deer"))
             {
-                // Check if we're close enough to plant
-                if (closestDistance <= agent.stoppingDistance * 1.5f)
+                // Skip self and inactive deer
+                if (deer == gameObject || !deer.activeInHierarchy)
                 {
-                    behaviouralState = "eating";
+                    continue;
+                }
+
+                // Skip deer that are busy
+                DeerOOP potentialMate = deer.GetComponent<DeerOOP>();
+                if ((potentialMate != null) && (potentialMate.behaviouralState != "mating" || potentialMate.behaviouralState != "runFromWolf"))
+                {
+                    continue;
+                }
+
+                // Check distance
+                float distance = Vector3.Distance(transform.position, deer.transform.position);
+                if (distance < closestDistanceToMate && distance <= 100f)
+                {
+                    closestDistanceToMate = distance;
+                    distanceToMate = closestDistanceToMate;
+                    closestDeer = deer;
+                }
+            }
+        }
+    }
+
+    ////////////////////////////////////
+
+    void RunFromWolf()
+    {
+        // Only search for wolves every 2 seconds to optimize performance
+        if (Time.time % 2f < Time.deltaTime)
+        {
+            GameObject closestWolf = null;
+            float closestDistanceToWolf = Mathf.Infinity;
+
+            // Find all wolves in the scene
+            foreach (GameObject wolf in GameObject.FindGameObjectsWithTag("Wolf"))
+            {
+                // Check distance
+                float distance = Vector3.Distance(transform.position, wolf.transform.position);
+                if (distance < closestDistanceToWolf && distance <= 100f)
+                {
+                    closestDistanceToWolf = distance;
+                    closestWolf = wolf ;
+                }
+            }
+
+            // If we found a wolf
+            if (closestWolf != null)
+            {
+                // Check if we're close enough to wolf
+                if (closestDistanceToWolf <= agent.stoppingDistance * 1.5f)
+                {
                     agent.isStopped = true;
                     return;
                 }
@@ -314,7 +354,7 @@ public class DeerOOP : OrganismOOP
                 // Move toward plant
                 agent.isStopped = false;
                 agent.speed = (stamina > staminaMax / 2) ? 5f : 3f; // Faster if high stamina
-                agent.SetDestination(closestPlant.transform.position);
+                agent.SetDestination(closestWolf.transform.position);
             }
             else
             {
@@ -332,16 +372,16 @@ public class DeerOOP : OrganismOOP
         if (Time.time % 2f < Time.deltaTime)
         {
             GameObject closestPlant = null;
-            float closestDistance = Mathf.Infinity;
+            float closestDistanceToPlant = Mathf.Infinity;
 
             // Find all plant in the scene
             foreach (GameObject plant in GameObject.FindGameObjectsWithTag("Plant"))
             {
                 // Check distance
                 float distance = Vector3.Distance(transform.position, plant.transform.position);
-                if (distance < closestDistance && distance <= 100f)
+                if (distance < closestDistanceToPlant && distance <= 100f)
                 {
-                    closestDistance = distance;
+                    closestDistanceToPlant = distance;
                     closestPlant = plant;
                 }
             }
@@ -350,9 +390,8 @@ public class DeerOOP : OrganismOOP
             if (closestPlant != null)
             {
                 // Check if we're close enough to plant
-                if (closestDistance <= agent.stoppingDistance * 1.5f)
+                if (closestDistanceToPlant <= agent.stoppingDistance * 1.5f)
                 {
-                    behaviouralState = "eating";
                     agent.isStopped = true;
                     return;
                 }
@@ -378,7 +417,7 @@ public class DeerOOP : OrganismOOP
         if (Time.time % 2f < Time.deltaTime)
         {
             GameObject closestDeer = null;
-            float closestDistance = Mathf.Infinity;
+            float closestDistanceToMate = Mathf.Infinity;
 
             // Find all deer in the scene
             foreach (GameObject deer in GameObject.FindGameObjectsWithTag("Deer"))
@@ -391,16 +430,16 @@ public class DeerOOP : OrganismOOP
 
                 // Skip deer that are busy
                 DeerOOP potentialMate = deer.GetComponent<DeerOOP>();
-                if ((potentialMate != null) && (potentialMate.behaviouralState == "mating" || potentialMate.behaviouralState == "runFromWolf"))
+                if ((potentialMate != null) && (potentialMate.behaviouralState != "mating" || potentialMate.behaviouralState != "runFromWolf"))
                 {
                     continue;
                 }
 
                 // Check distance
                 float distance = Vector3.Distance(transform.position, deer.transform.position);
-                if (distance < closestDistance && distance <= 100f)
+                if (distance < closestDistanceToMate && distance <= 100f)
                 {
-                    closestDistance = distance;
+                    closestDistanceToMate = distance;
                     closestDeer = deer;
                 }
             }
@@ -409,23 +448,29 @@ public class DeerOOP : OrganismOOP
             if (closestDeer != null)
             {
                 // Check if we're close enough to mate
-                if (closestDistance <= agent.stoppingDistance * 1.5f)
+                if (closestDistanceToMate <= agent.stoppingDistance * 1.5f)
                 {
-                    behaviouralState = "mating";
                     agent.isStopped = true;
                     return;
                 }
 
                 // Move toward mate
                 agent.isStopped = false;
-                agent.speed = (stamina > staminaMax / 2) ? 5f : 3f; // Faster if high stamina
+                if (movementState == "running")
+                {
+                    agent.speed = 5f;
+                }
+                else if (movementState == "walking")
+                {
+                    agent.speed = 3f;
+                }
+
                 agent.SetDestination(closestDeer.transform.position);
             }
             else
             {
                 // If no mate found then go idle
                 behaviouralState = "idle";
-                agent.isStopped = true;
             }
         }
     }

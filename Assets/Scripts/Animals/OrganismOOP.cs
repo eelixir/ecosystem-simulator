@@ -24,7 +24,7 @@ public class OrganismOOP : MonoBehaviour
 
     // Pathfinding 
     public NavMeshAgent agent;
-
+    public float distanceToWater;
 
     // Searching for water method
     public void SearchForWater()
@@ -33,16 +33,17 @@ public class OrganismOOP : MonoBehaviour
         if (Time.time % 2f < Time.deltaTime)
         {
             GameObject closestWater = null;
-            float closestDistance = Mathf.Infinity;
+            float closestDistanceToWater = Mathf.Infinity;
 
             // Find all water in the scene
             foreach (GameObject water in GameObject.FindGameObjectsWithTag("Water"))
             {
                 // Check distance
                 float distance = Vector3.Distance(transform.position, water.transform.position);
-                if (distance < closestDistance && distance <= 100f)
+                if (distance < closestDistanceToWater && distance <= 100f)
                 {
-                    closestDistance = distance;
+                    closestDistanceToWater = distance;
+                    distanceToWater = closestDistanceToWater;
                     closestWater = water;
                 }
             }
@@ -51,7 +52,7 @@ public class OrganismOOP : MonoBehaviour
             if (closestWater != null)
             {
                 // Check if we're close enough to water
-                if (closestDistance <= agent.stoppingDistance * 1.5f)
+                if (closestDistanceToWater <= agent.stoppingDistance * 1.5f)
                 {
                     behaviouralState = "drinking";
                     agent.isStopped = true;
