@@ -21,6 +21,8 @@ public class OrganismOOP : MonoBehaviour
     public string behaviouralState;
     public string[] skills;
     public float radius;
+
+    // Pathfinding 
     public NavMeshAgent agent;
 
 

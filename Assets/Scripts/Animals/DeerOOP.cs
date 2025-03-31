@@ -28,7 +28,7 @@ public class DeerOOP : OrganismOOP
     private bool plantDetected = false;
     private bool mateDetected = false;
     private bool waterDetected = false;
-
+    
 
     void Start()
     {
@@ -113,7 +113,7 @@ public class DeerOOP : OrganismOOP
             if (logTimer >= logInterval)
             {
                 Debug.Log($"Health: {health}, Stamina: {stamina}, Hunger: {hunger}, Thirst: {thirst}");
-                logTimer = 0f; 
+                logTimer = 0f;
             }
 
             if (stamina <= 0)
@@ -181,30 +181,32 @@ public class DeerOOP : OrganismOOP
         {
             behaviouralState = "searchWater";
         }
-        else if (waterDetected && plantDetected)
+        else if (waterDetected && plantDetected && agent.isStopped)
         {
             if (thirst <= hunger)
             {
                 behaviouralState = "drinking";
+                return;
             }
             else
             {
                 behaviouralState = "eating";
             }
         }
-        else if (plantDetected)
+        else if (plantDetected && (agent.isStopped))
         {
             behaviouralState = "eating";
         }
-        else if (waterDetected)
+        else if (waterDetected && (agent.isStopped))
         {
             behaviouralState = "drinking";
+            return;
         }
         else if ((hunger > (hungerMax / 2)) && (thirst > (thirstMax / 2)) && (stamina > (staminaMax / 2)))
         {
             behaviouralState = "searchMate";
         }
-        else if (mateDetected && (hunger > (hungerMax / 2)) && (thirst > (thirstMax / 2)))
+        else if (mateDetected && (hunger > (hungerMax / 2)) && (thirst > (thirstMax / 2)) && (agent.isStopped))
         {
             behaviouralState = "mating";
         }
@@ -221,6 +223,7 @@ public class DeerOOP : OrganismOOP
         {
             case "runFromWolf":
                 // Pathfinding to escape from wolf
+                RunFromWolf();
                 break;
 
             case "searchPlant":
@@ -240,10 +243,26 @@ public class DeerOOP : OrganismOOP
 
             case "eating":
                 // Eating behavior
+                decreaseTimer += Time.deltaTime;
+                logTimer += Time.deltaTime;
+
+                if (decreaseTimer >= decreaseInterval)
+                {
+                    hunger += 10;
+                    decreaseTimer = 0f;
+                }
                 break;
 
             case "drinking":
                 // Drinking behavior
+                decreaseTimer += Time.deltaTime;
+                logTimer += Time.deltaTime;
+
+                if (decreaseTimer >= decreaseInterval)
+                {
+                    thirst += 10;
+                    decreaseTimer = 0f;
+                }
                 break;
 
             case "mating":
@@ -259,6 +278,53 @@ public class DeerOOP : OrganismOOP
                 break;
         }
     }
+
+
+    void RunFromWolf()
+    {
+        // Only search for plants every 2 seconds to optimize performance
+        if (Time.time % 2f < Time.deltaTime)
+        {
+            GameObject closestPlant = null;
+            float closestDistance = Mathf.Infinity;
+
+            // Find all plant in the scene
+            foreach (GameObject plant in GameObject.FindGameObjectsWithTag("Wolf"))
+            {
+                // Check distance
+                float distance = Vector3.Distance(transform.position, plant.transform.position);
+                if (distance < closestDistance && distance <= 100f)
+                {
+                    closestDistance = distance;
+                    closestPlant = plant;
+                }
+            }
+
+            // If we found a plant
+            if (closestPlant != null)
+            {
+                // Check if we're close enough to plant
+                if (closestDistance <= agent.stoppingDistance * 1.5f)
+                {
+                    behaviouralState = "eating";
+                    agent.isStopped = true;
+                    return;
+                }
+
+                // Move toward plant
+                agent.isStopped = false;
+                agent.speed = (stamina > staminaMax / 2) ? 5f : 3f; // Faster if high stamina
+                agent.SetDestination(closestPlant.transform.position);
+            }
+            else
+            {
+                // If no plant found then go idle
+                behaviouralState = "idle";
+                agent.isStopped = true;
+            }
+        }
+    }
+
 
     void SearchForPlant()
     {
@@ -309,7 +375,7 @@ public class DeerOOP : OrganismOOP
     void SearchForMate()
     {
         // Only search for mates every 2 seconds to optimize performance
-        if (Time.time % 2f < Time.deltaTime) 
+        if (Time.time % 2f < Time.deltaTime)
         {
             GameObject closestDeer = null;
             float closestDistance = Mathf.Infinity;
@@ -329,7 +395,7 @@ public class DeerOOP : OrganismOOP
                 {
                     continue;
                 }
-            
+
                 // Check distance
                 float distance = Vector3.Distance(transform.position, deer.transform.position);
                 if (distance < closestDistance && distance <= 100f)

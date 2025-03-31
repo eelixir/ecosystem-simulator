@@ -28,6 +28,7 @@ public class WolfOOP : OrganismOOP
     private bool mateDetected = false;
     private bool waterDetected = false;
 
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -55,6 +56,7 @@ public class WolfOOP : OrganismOOP
         Debug.Log(organismName + " initialized.");
     }
 
+
     void Update()
     {
         DetectSurroundings();
@@ -70,7 +72,7 @@ public class WolfOOP : OrganismOOP
                 health = 0;
                 EnvironmentData.WolfPopulation -= 1;
                 isAlive = false;
-                Destroy(gameObject);
+                // Destroy(gameObject);
             }
             else if (hunger <= 0)
             {
@@ -170,15 +172,21 @@ public class WolfOOP : OrganismOOP
         {
             behaviouralState = "searchWater";
         }
-        else if (waterDetected)
+        else if ((waterDetected) && (agent.isStopped))
         {
             behaviouralState = "drinking";
+            return;
         }
-        else if ((waterDetected) && (deerDetected))
+        else if ((deerDetected) && (agent.isStopped))
+        {
+            behaviouralState = "eating";
+        }
+        else if ((waterDetected) && (deerDetected) && (agent.isStopped))
         {
             if (thirst <= hunger)
             {
                 behaviouralState = "drinking";
+                return;
             }
             else
             {
@@ -189,7 +197,7 @@ public class WolfOOP : OrganismOOP
         {
             behaviouralState = "searchMate";
         }
-        else if ((mateDetected) && (hunger > (hungerMax / 2)) && (thirst > (thirstMax / 2)) && (stamina > (staminaMax / 2)))
+        else if ((mateDetected) && (hunger > (hungerMax / 2)) && (thirst > (thirstMax / 2)) && (stamina > (staminaMax / 2)) && (agent.isStopped))
         {
             behaviouralState = "mating";
         }
@@ -222,10 +230,26 @@ public class WolfOOP : OrganismOOP
 
             case "eating":
                 // Eating behavior
+                decreaseTimer += Time.deltaTime;
+                logTimer += Time.deltaTime;
+
+                if (decreaseTimer >= decreaseInterval)
+                {
+                    hunger += 10;
+                    decreaseTimer = 0f;
+                }
                 break;
 
             case "drinking":
                 // Drinking behavior
+                decreaseTimer += Time.deltaTime;
+                logTimer += Time.deltaTime;
+
+                if (decreaseTimer >= decreaseInterval)
+                {
+                    thirst += 10;
+                    decreaseTimer = 0f;
+                }
                 break;
 
             case "mating":
@@ -315,7 +339,7 @@ public class WolfOOP : OrganismOOP
 
                 // Check distance
                 float distance = Vector3.Distance(transform.position, wolf.transform.position);
-                if (distance < closestDistance && distance <= 100f) 
+                if (distance < closestDistance && distance <= 100f)
                 {
                     closestDistance = distance;
                     closestWolf = wolf;
@@ -371,3 +395,4 @@ public class WolfOOP : OrganismOOP
         }
     }
 }
+    
