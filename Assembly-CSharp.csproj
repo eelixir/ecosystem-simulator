@@ -64,6 +64,7 @@
     <Compile Include="Assets\Scripts\PlayerControlledMovement.cs" />
     <Compile Include="Assets\Scripts\Menus\InputHandler.cs" />
     <Compile Include="Assets\Scripts\Menus\Menus.cs" />
+    <Compile Include="Assets\Scripts\Animals\PlantOOP.cs" />
     <Compile Include="Assets\Scripts\Free Camera\FreeCamController.cs" />
     <Compile Include="Assets\Scripts\UI\CanvasSimulationDataUpdater.cs" />
     <Compile Include="Assets\Scripts\Animals\WolfOOP.cs" />

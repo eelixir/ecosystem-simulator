@@ -12,11 +12,15 @@ public class OrganismInitilisation : MonoBehaviour
     public static int DeerStartingPopulation = 10;
     public static int WolfStartingPopulation = 10;
     public static int PlantStartingPopulation = 10;
-    public static float TimeStartingLength = 300;  // Simulation time in seconds
+    public static float TimeStartingLength = 300;  
 
     public Collider platformCollider;
     private float timeRemaining;
     private bool isSimulationRunning = true;
+
+    // Randomly spawning new plants
+    private float spawnTimer = 0f;
+    private float spawnInterval = 1f;
 
     void Start()
     {
@@ -58,6 +62,19 @@ public class OrganismInitilisation : MonoBehaviour
                 isSimulationRunning = false;
                 Debug.Log("Simulation Ended");
             }
+
+            // Random chance to spawn a plant every 1 second
+            spawnTimer += Time.deltaTime;
+
+            if (spawnTimer >= spawnInterval)
+            {
+                int randomNum = Random.Range(0, 5);
+                if (randomNum == 0)
+                {
+                    SpawnObjects(PlantPrefab, 1);
+                }
+            }
+
         }
     }
 
