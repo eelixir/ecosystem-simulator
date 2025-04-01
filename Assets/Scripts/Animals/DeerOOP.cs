@@ -1,17 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class DeerOOP : OrganismOOP
 {
+    // Camera and timer variables
     public GameObject DeerCamera;
     private float decreaseTimer = 0f;
     private float decreaseInterval = 1f;
     private float logTimer = 0f;
-    private float logInterval = 1f; 
-    private float detectionTimer = 0f;
-    private float detectionInterval = 2f;
+    private float logInterval = 1f;
 
     // Organism Data UI
     public static bool CanvasOrganismDataUI = false;
@@ -24,14 +21,16 @@ public class DeerOOP : OrganismOOP
     public static string selectedDeerMovementState;
     public static string selectedDeerBehavioralState;
 
-    // Pathfinding
+    // Pathfinding variables
     public LayerMask detectionLayer;
     public float distanceToWolf;
     public float distanceToPlant;
     public float distanceToMate;
     public float distanceToWater;
+    public int matingCooldown = 0;
 
 
+    // Start function when script is first ran
     void Start()
     {
         // Declare variables for the organism
@@ -47,90 +46,187 @@ public class DeerOOP : OrganismOOP
         thirstMax = 100;
         stamina = 100;
         staminaMax = 100;
-        movementState = "walking";
-        behaviouralState = "idle";
+        movementState = "running";
+        behaviouralState = "searchPlant";
         position = transform.position;
-        radius = 5.0f;
+        radius = 10.0f;
 
-        // Set the GameObject's name to the organisms name
+        // Set the GameObject's name to the organism's name
         gameObject.name = organismName + "_" + gameObject.GetInstanceID();
         organismName = gameObject.name;
 
         Debug.Log(organismName + " initialized.");
     }
 
+
+    // Update function
     void Update()
     {
+        // Checks if organism is alive
         if (isAlive)
         {
+            Detection();
             BehaviourUpdating();
             Pathfinding();
 
+            // If organism is not alive then decrease population by 1 and set isAlive to false
             if (health <= 0)
             {
-                health = 0;
-                EnvironmentData.DeerPopulation -= 1;
-                isAlive = false;
+                organismDead();
             }
+            // Makes sure hunger, thirst and stamina cannot go below 0
             else if (hunger <= 0) hunger = 0;
             else if (thirst <= 0) thirst = 0;
             else if (stamina <= 0) stamina = 0;
 
+            // Updates movement state depending on stamina
+            if (stamina <= 25)
+            {
+                movementState = "walking";
+            }
+            else if (stamina > 25)
+            {
+                movementState = "running";
+            }
+
+            // Decrease time by the frames that have passed
             decreaseTimer += Time.deltaTime;
             logTimer += Time.deltaTime;
-            detectionTimer += Time.deltaTime;
 
+            // Updates variables every second
             if (decreaseTimer >= decreaseInterval)
             {
+                // Naturally  decrease hunger and thrist over time
                 if (health >= 0)
                 {
-                    hunger -= 1;
-                    thirst -= 1;
+                    hunger -= 3;
+                    thirst -= 3;
                 }
-                if (hunger <= 10 || thirst <= 10)
+                // If hunger or thirst is <= 50 then decrease health and stamina
+                if (hunger <= 50 || thirst <= 50)
                 {
                     health -= 3;
                     stamina -= 3;
                 }
+                // Decrease mating cooldown by 1 every second if it is greater than zero
+                if (matingCooldown > 0)
+                {
+                    matingCooldown -= 1;
+                }
+
                 decreaseTimer = 0f;
             }
 
+            // Log stats at the specified interval
             if (logTimer >= logInterval)
             {
                 Debug.Log($"Health: {health}, Stamina: {stamina}, Hunger: {hunger}, Thirst: {thirst}");
                 logTimer = 0f;
             }
+        }
+    }
 
-            if (detectionTimer >= detectionInterval)
+
+    // Detection logic used to find distances to other objects
+    public void Detection()
+    {
+        GameObject closestWolf = null;
+        float closestDistanceToWolf = Mathf.Infinity;
+        GameObject closestPlant = null;
+        float closestDistanceToPlant = Mathf.Infinity;
+        GameObject closestWater = null;
+        float closestDistanceToWater = Mathf.Infinity;
+        GameObject closestDeer = null;
+        float closestDistanceToMate = Mathf.Infinity;
+
+        // Detect the closest wolf
+        foreach (GameObject wolf in GameObject.FindGameObjectsWithTag("Wolf"))
+        {
+            float distance = Vector3.Distance(transform.position, wolf.transform.position);
+            if (distance < closestDistanceToWolf && distance <= 100f)
             {
-                Detection();
-                detectionTimer = 0f;
+                closestDistanceToWolf = distance;
+                distanceToWolf = closestDistanceToWolf;
+                closestWolf = wolf;
+            }
+
+            // Destroy if colliding with a Wolf
+            if (distance <= 1f)
+            {
+                organismDead();
+                return;
+            }
+        }
+
+        // Detect the closest plant
+        foreach (GameObject plant in GameObject.FindGameObjectsWithTag("Plant"))
+        {
+            float distance = Vector3.Distance(transform.position, plant.transform.position);
+            if (distance < closestDistanceToPlant && distance <= 100f)
+            {
+                closestDistanceToPlant = distance;
+                distanceToPlant = closestDistanceToPlant;
+                closestPlant = plant;
+            }
+        }
+
+        // Detect the closest water
+        foreach (GameObject water in GameObject.FindGameObjectsWithTag("Water"))
+        {
+            float distance = Vector3.Distance(transform.position, water.transform.position);
+            if (distance < closestDistanceToWater && distance <= 100f)
+            {
+                closestDistanceToWater = distance;
+                distanceToWater = closestDistanceToWater;
+                closestWater = water;
+            }
+        }
+
+        // Detect the closest deer for mating
+        foreach (GameObject deer in GameObject.FindGameObjectsWithTag("Deer"))
+        {
+            if (deer == gameObject || !deer.activeInHierarchy)
+            {
+                continue; // Skip self or inactive deer
+            }
+
+            DeerOOP potentialMate = deer.GetComponent<DeerOOP>();
+            if (potentialMate != null && potentialMate.behaviouralState != "mating")
+            {
+                // If potential mate is found and it's not already mating
+                float distance = Vector3.Distance(transform.position, deer.transform.position);
+                if (distance < closestDistanceToMate && distance <= 100f)
+                {
+                    closestDistanceToMate = distance;
+                    distanceToMate = closestDistanceToMate;
+                    closestDeer = deer;
+                }
             }
         }
     }
 
 
-    // Updated the Behavioural State depending on certain conditions
+    // Updates the Behavioural State depending on certain conditions
     void BehaviourUpdating()
     {
-        if (distanceToWolf < radius)
+        // If a wolf is near the deer then run from it and take highest priority
+        if (distanceToWolf <= radius)
         {
-            // Running from wolf takes highest priority
             behaviouralState = "runFromWolf";
             return;
         }
 
-        // Define useful flags
+        // Define useful variables
         bool isHungry = hunger <= (hungerMax / 2);
         bool isThirsty = thirst <= (thirstMax / 2);
-        bool needsFood = isHungry && hunger < thirst && distanceToPlant > 2f;
-        bool needsWater = isThirsty && thirst < hunger && distanceToWater > 2f;
-        bool nearPlant = distanceToPlant <= 2f;
-        bool nearWater = distanceToWater <= 2f;
-        bool nearMate = distanceToMate <= 2f;
+        bool needsFood = isHungry && hunger < thirst && distanceToPlant > 3f;
+        bool needsWater = isThirsty && thirst < hunger && distanceToWater > 3f;
+        bool nearPlant = distanceToPlant <= 3f;
+        bool nearWater = distanceToWater <= 3f;
+        bool nearMate = distanceToMate <= 3f;
 
-        // Maintain previous conditions for mating
-        if (!isHungry && !isThirsty && (stamina > (staminaMax / 2)))
+        // Behavioural conditions with the priority order: searching for mate, then water, then food
+        if (!isHungry && !isThirsty && (stamina > (staminaMax / 2)) && (matingCooldown == 0))
         {
             if (!nearMate)
             {
@@ -151,7 +247,7 @@ public class DeerOOP : OrganismOOP
         }
         else if (isHungry && isThirsty && hunger == thirst && distanceToWater > 1f)
         {
-            behaviouralState = "searchWater"; 
+            behaviouralState = "searchWater";
         }
         else if (nearWater && nearPlant)
         {
@@ -174,128 +270,193 @@ public class DeerOOP : OrganismOOP
         }
         else
         {
-            behaviouralState = "idle";
-            Debug.Log(organismName + " is idle. Possible problem!");
+            if (thirst <= hunger)
+            {
+                behaviouralState = "searchWater";
+            }
+            else
+            {
+                behaviouralState = "searchPlant";
+            }
         }
     }
 
 
-
-
+    // Function for the behavioural status of the wolf that determines the pathfinding
     void Pathfinding()
     {
         switch (behaviouralState)
         {
             case "runFromWolf":
-                // Pathfinding to escape from wolf
                 RunFromWolf();
                 break;
 
             case "searchPlant":
-                // Pathfinding to find plant
                 SearchForPlant();
                 break;
 
             case "searchWater":
-                // Pathfinding to find water
                 SearchForWater();
                 break;
 
             case "searchMate":
-                // Pathfinding to find a mate
                 SearchForMate();
                 break;
 
             case "eating":
                 // Eating behavior
-                decreaseTimer += Time.deltaTime;
-                logTimer += Time.deltaTime;
-
-                if (decreaseTimer >= decreaseInterval)
-                {
-                    hunger += 10;
-                    if (hunger > hungerMax)
-                    {
-                        hunger = hungerMax;
-                    }
-                    decreaseTimer = 0f;
-                }
+                hunger = hungerMax;
                 break;
 
             case "drinking":
-                // Drinking behavior
-                decreaseTimer += Time.deltaTime;
-                logTimer += Time.deltaTime;
-
-                if (decreaseTimer >= decreaseInterval)
-                {
-                    thirst += 10;
-                    if (thirst > thirstMax)
-                    {
-                        thirst = thirstMax;
-                    }
-                    decreaseTimer = 0f;
-                }
+                //Drinking();
+                thirst = thirstMax;
                 break;
 
             case "mating":
                 // Mating behavior
-                break;
-
-            case "idle":
-                // Pathfinding for random movement 
+                matingCooldown = 20;
                 break;
 
             default:
-                Debug.LogError("Error: " + organismName + " has an unrecognized behaviouralState. ");
+                Debug.LogError("Error: " + organismName + " has an unrecognized behaviouralState.");
                 break;
         }
     }
 
-    public void Detection()
+    
+    // Pathfinding to move deer the opposite direction from the wolf
+    void RunFromWolf()
     {
         GameObject closestWolf = null;
         float closestDistanceToWolf = Mathf.Infinity;
-        GameObject closestPlant = null;
-        float closestDistanceToPlant = Mathf.Infinity;
-        GameObject closestWater = null;
-        float closestDistanceToWater = Mathf.Infinity;
-        GameObject closestDeer = null;
-        float closestDistanceToMate = Mathf.Infinity;
 
+        // Find the closest wolf
         foreach (GameObject wolf in GameObject.FindGameObjectsWithTag("Wolf"))
         {
             float distance = Vector3.Distance(transform.position, wolf.transform.position);
             if (distance < closestDistanceToWolf && distance <= 100f)
             {
                 closestDistanceToWolf = distance;
-                distanceToWolf = closestDistanceToWolf;
                 closestWolf = wolf;
             }
         }
 
+        // If a wolf is detected, run away
+        if (closestWolf != null)
+        {
+            agent.isStopped = false;
+            if (movementState == "running")
+            {
+                agent.speed = 8f;
+            }
+            else
+            {
+                agent.speed = 4f;
+            }
+            Vector3 directionAwayFromWolf = transform.position - closestWolf.transform.position;
+            agent.SetDestination(transform.position + directionAwayFromWolf);
+        }
+        else
+        {
+            agent.isStopped = true;
+        }
+    }
+
+
+    // Pathfinding to move deer towards the closest plant
+    void SearchForPlant()
+    {
+        GameObject closestPlant = null;
+        float closestDistanceToPlant = Mathf.Infinity;
+
+        // Find the closest plant
         foreach (GameObject plant in GameObject.FindGameObjectsWithTag("Plant"))
         {
             float distance = Vector3.Distance(transform.position, plant.transform.position);
             if (distance < closestDistanceToPlant && distance <= 100f)
             {
                 closestDistanceToPlant = distance;
-                distanceToPlant = closestDistanceToPlant;
                 closestPlant = plant;
             }
         }
 
+        if (closestPlant != null)
+        {
+            if (closestDistanceToPlant <= agent.stoppingDistance * 1.5f)
+            {
+                agent.isStopped = true;
+                return;
+            }
+
+            agent.isStopped = false;
+            if (movementState == "running")
+            {
+                agent.speed = 8f;
+            }
+            else
+            {
+                agent.speed = 4f;
+            }
+            agent.SetDestination(closestPlant.transform.position);
+        }
+        else
+        {
+            agent.isStopped = true;
+        }   
+    }
+
+
+    // Pathfinding to move deer towards the closest water
+    void SearchForWater()
+    {
+        GameObject closestWater = null;
+        float closestDistanceToWater = Mathf.Infinity;
+
+        // Find the closest water source
         foreach (GameObject water in GameObject.FindGameObjectsWithTag("Water"))
         {
             float distance = Vector3.Distance(transform.position, water.transform.position);
             if (distance < closestDistanceToWater && distance <= 100f)
             {
                 closestDistanceToWater = distance;
-                distanceToWater = closestDistanceToWater;
                 closestWater = water;
             }
         }
 
+        if (closestWater != null)
+        {
+            if (closestDistanceToWater <= agent.stoppingDistance * 1.5f)
+            {
+                agent.isStopped = true;
+                return;
+            }
+
+            agent.isStopped = false;
+            if (movementState == "running")
+            {
+                agent.speed = 8f;
+            }
+            else
+            {
+                agent.speed = 4f;
+            }
+            agent.SetDestination(closestWater.transform.position);
+        }
+        else
+        {
+            agent.isStopped = true;
+        }
+    }
+
+
+    // Pathfinding to move deer towards the closest mate
+    void SearchForMate()
+    {
+        GameObject closestDeer = null;
+        float closestDistanceToMate = Mathf.Infinity;
+
+        // Find the closest potential mate
         foreach (GameObject deer in GameObject.FindGameObjectsWithTag("Deer"))
         {
             if (deer == gameObject || !deer.activeInHierarchy)
@@ -303,237 +464,30 @@ public class DeerOOP : OrganismOOP
                 continue;
             }
 
-            // Skip unavailable deer 
             DeerOOP potentialMate = deer.GetComponent<DeerOOP>();
-            if ((potentialMate != null) && (potentialMate.behaviouralState != "mating" && potentialMate.behaviouralState != "runFromWolf"))
+            if (potentialMate != null && Vector3.Distance(transform.position, deer.transform.position) < closestDistanceToMate)
             {
-                Debug.Log("Mate busy");
-                continue;
-            }
-
-            float distance = Vector3.Distance(transform.position, deer.transform.position);
-            if (distance < closestDistanceToMate && distance <= 100f)
-            {
-                closestDistanceToMate = distance;
-                distanceToMate = closestDistanceToMate;
+                closestDistanceToMate = Vector3.Distance(transform.position, deer.transform.position);
                 closestDeer = deer;
             }
         }
-    }
 
-    
-
-    void RunFromWolf()
-    {
-        // Only search for wolves every 2 seconds to optimize performance
-        if (Time.time % 2f < Time.deltaTime)
+        if (closestDeer != null)
         {
-            GameObject closestWolf = null;
-            float closestDistanceToWolf = Mathf.Infinity;
-
-            // Find all wolves in the scene
-            foreach (GameObject wolf in GameObject.FindGameObjectsWithTag("Wolf"))
+            agent.isStopped = false;
+            if (movementState == "running")
             {
-                // Check distance
-                float distance = Vector3.Distance(transform.position, wolf.transform.position);
-                if (distance < closestDistanceToWolf && distance <= 100f)
-                {
-                    closestDistanceToWolf = distance;
-                    closestWolf = wolf ;
-                }
-            }
-
-            // If we found a wolf
-            if (closestWolf != null)
-            {
-                // Move toward plant
-                agent.isStopped = false;
-                if (movementState == "running")
-                {
-                    agent.speed = 5f;
-                }
-                else if (movementState == "walking")
-                {
-                    agent.speed = 3f;
-                }
-
-                agent.SetDestination(closestWolf.transform.position);
+                agent.speed = 8f;
             }
             else
             {
-                // If no plant found then go idle
-                behaviouralState = "idle";
-                agent.isStopped = true;
+                agent.speed = 4f;
             }
+            agent.SetDestination(closestDeer.transform.position);
         }
-    }
-
-
-    void SearchForPlant()
-    {
-        // Only search for plants every 2 seconds to optimize performance
-        if (Time.time % 2f < Time.deltaTime)
+        else
         {
-            GameObject closestPlant = null;
-            float closestDistanceToPlant = Mathf.Infinity;
-
-            // Find all plant in the scene
-            foreach (GameObject plant in GameObject.FindGameObjectsWithTag("Plant"))
-            {
-                // Check distance
-                float distance = Vector3.Distance(transform.position, plant.transform.position);
-                if (distance < closestDistanceToPlant && distance <= 100f)
-                {
-                    closestDistanceToPlant = distance;
-                    closestPlant = plant;
-                }
-            }
-
-            // If we found a plant
-            if (closestPlant != null)
-            {
-                // Check if we're close enough to plant
-                if (closestDistanceToPlant <= agent.stoppingDistance * 1.5f)
-                {
-                    agent.isStopped = true;
-                    return;
-                }
-
-                // Move toward plant
-                agent.isStopped = false;
-                if (movementState == "running")
-                {
-                    agent.speed = 5f;
-                }
-                else if (movementState == "walking")
-                {
-                    agent.speed = 3f;
-                }
-
-                agent.SetDestination(closestPlant.transform.position);
-            }
-            else
-            {
-                // If no plant found then go idle
-                behaviouralState = "idle";
-                agent.isStopped = true;
-            }
-        }
-    }
-
-    public void SearchForWater()
-    {
-        // Only search for water every 2 seconds to optimize performance
-        if (Time.time % 2f < Time.deltaTime)
-        {
-            GameObject closestWater = null;
-            float closestDistanceToWater = Mathf.Infinity;
-
-            // Find all water in the scene
-            foreach (GameObject water in GameObject.FindGameObjectsWithTag("Water"))
-            {
-                // Check distance
-                float distance = Vector3.Distance(transform.position, water.transform.position);
-                if (distance < closestDistanceToWater && distance <= 100f)
-                {
-                    closestDistanceToWater = distance;
-                    closestWater = water;
-                }
-            }
-
-            // If we found water
-            if (closestWater != null)
-            {
-                // Check if we're close enough to water
-                if (closestDistanceToWater <= agent.stoppingDistance * 1.5f)
-                {
-                    agent.isStopped = true;
-                    return;
-                }
-
-                // Move toward water
-                agent.isStopped = false;
-                if (movementState == "running")
-                {
-                    agent.speed = 5f;
-                }
-                else if (movementState == "walking")
-                {
-                    agent.speed = 3f;
-                }
-
-                agent.SetDestination(closestWater.transform.position);
-            }
-            else
-            {
-                // If no water found then go idle
-                behaviouralState = "idle";
-                agent.isStopped = true;
-            }
-        }
-
-    }
-    void SearchForMate()
-    {
-        // Only search for mates every 2 seconds to optimize performance
-        if (Time.time % 2f < Time.deltaTime)
-        {
-            GameObject closestDeer = null;
-            float closestDistanceToMate = Mathf.Infinity;
-
-            // Find all deer in the scene
-            foreach (GameObject deer in GameObject.FindGameObjectsWithTag("Deer"))
-            {
-                // Skip self and inactive deer
-                if (deer == gameObject || !deer.activeInHierarchy)
-                {
-                    continue;
-                }
-
-                // Skip deer that are busy
-                DeerOOP potentialMate = deer.GetComponent<DeerOOP>();
-                if ((potentialMate != null) && (potentialMate.behaviouralState != "mating" || potentialMate.behaviouralState != "runFromWolf"))
-                {
-                    continue;
-                }
-
-                // Check distance
-                float distance = Vector3.Distance(transform.position, deer.transform.position);
-                if (distance < closestDistanceToMate && distance <= 100f)
-                {
-                    closestDistanceToMate = distance;
-                    closestDeer = deer;
-                }
-            }
-
-            // If we found a mate
-            if (closestDeer != null)
-            {
-                // Check if we're close enough to mate
-                if (closestDistanceToMate <= agent.stoppingDistance * 1.5f)
-                {
-                    agent.isStopped = true;
-                    return;
-                }
-
-                // Move toward mate
-                agent.isStopped = false;
-                if (movementState == "running")
-                {
-                    agent.speed = 5f;
-                }
-                else if (movementState == "walking")
-                {
-                    agent.speed = 3f;
-                }
-
-                agent.SetDestination(closestDeer.transform.position);
-            }
-            else
-            {
-                // If no mate found then go idle
-                behaviouralState = "idle";
-            }
+            agent.isStopped = true;
         }
     }
 
@@ -560,5 +514,16 @@ public class DeerOOP : OrganismOOP
             FreeCamControllerUpdater = true;
         }
     }
+
+    void organismDead()
+    {
+        health = 0;
+        EnvironmentData.DeerPopulation -= 1;
+        isAlive = false;
+        // If organism is dead then destory gameObject
+        Object.Destroy(gameObject);
+    }
 }
+
+
 
