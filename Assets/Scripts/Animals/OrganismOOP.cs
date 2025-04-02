@@ -17,9 +17,9 @@ public class OrganismOOP : MonoBehaviour
     public int thirstMax;
     public int stamina;
     public int staminaMax;
+    public int speedMax;
     public string movementState;
     public string behaviouralState;
-    public string[] skills;
     public float radius;
 
     // Pathfinding 

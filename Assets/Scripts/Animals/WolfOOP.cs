@@ -20,6 +20,12 @@ public class WolfOOP : OrganismOOP
     public static int selectedWolfStamina;
     public static string selectedWolfMovementState;
     public static string selectedWolfBehavioralState;
+    public static int selectedWolfHealthMax;
+    public static int selectedWolfHungerMax;
+    public static int selectedWolfThirstMax;
+    public static int selectedWolfStaminaMax;
+    public static int selectedWolfSpeedMax;
+    public static float selectedWolfSightMax;
 
     // Pathfinding variables
     public LayerMask detectionLayer;
@@ -45,6 +51,7 @@ public class WolfOOP : OrganismOOP
         thirstMax = 100;
         stamina = 100;
         staminaMax = 100;
+        speedMax = 8;
         movementState = "running";
         behaviouralState = "searchDeer";
         position = transform.position;
@@ -438,6 +445,13 @@ public class WolfOOP : OrganismOOP
             selectedWolfStamina = stamina;
             selectedWolfMovementState = movementState;
             selectedWolfBehavioralState = behaviouralState;
+
+            selectedWolfHealthMax = healthMax;
+            selectedWolfHungerMax = hungerMax;
+            selectedWolfThirstMax = thirstMax;
+            selectedWolfStaminaMax = staminaMax;
+            selectedWolfSpeedMax  = speedMax;
+            selectedWolfSightMax = radius;
 
             // Set the CanvasOrganismDataUI to true
             CanvasOrganismDataUI = true;

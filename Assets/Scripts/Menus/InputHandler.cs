@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEditor.Overlays;
+using System;
 
 public class InputHandler : MonoBehaviour
 {
@@ -33,6 +34,11 @@ public class InputHandler : MonoBehaviour
         }
 
         Debug.Log($"{fieldName}: {value}");
+    }
+
+    internal static int Parse()
+    {
+        throw new NotImplementedException();
     }
 }
 

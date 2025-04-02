@@ -20,6 +20,12 @@ public class DeerOOP : OrganismOOP
     public static int selectedDeerStamina;
     public static string selectedDeerMovementState;
     public static string selectedDeerBehavioralState;
+    public static int selectedDeerHealthMax;
+    public static int selectedDeerHungerMax;
+    public static int selectedDeerThirstMax;
+    public static int selectedDeerStaminaMax;
+    public static int selectedDeerSpeedMax;
+    public static float selectedDeerSightMax;
 
     // Pathfinding variables
     public LayerMask detectionLayer;
@@ -46,6 +52,7 @@ public class DeerOOP : OrganismOOP
         thirstMax = 100;
         stamina = 100;
         staminaMax = 100;
+        speedMax = 8;
         movementState = "running";
         behaviouralState = "searchPlant";
         position = transform.position;
@@ -508,6 +515,13 @@ public class DeerOOP : OrganismOOP
             selectedDeerStamina = stamina;
             selectedDeerMovementState = movementState;
             selectedDeerBehavioralState = behaviouralState;
+
+            selectedDeerHealthMax = healthMax;
+            selectedDeerHungerMax = hungerMax;
+            selectedDeerThirstMax = thirstMax;
+            selectedDeerStaminaMax = staminaMax;
+            selectedDeerSpeedMax = speedMax;
+            selectedDeerSightMax = radius;
 
             // Set the CanvasOrganismDataUI to true
             CanvasOrganismDataUI = true;

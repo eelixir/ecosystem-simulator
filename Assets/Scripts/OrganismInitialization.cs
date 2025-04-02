@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -12,7 +14,7 @@ public class OrganismInitilisation : MonoBehaviour
     public static int DeerStartingPopulation = 10;
     public static int WolfStartingPopulation = 10;
     public static int PlantStartingPopulation = 10;
-    public static float TimeStartingLength = 300;  
+    public static float TimeStartingLength = 300;
 
     public Collider platformCollider;
     private float timeRemaining;
@@ -68,7 +70,7 @@ public class OrganismInitilisation : MonoBehaviour
 
             if (spawnTimer >= spawnInterval)
             {
-                int randomNum = Random.Range(0, 5);
+                int randomNum = UnityEngine.Random.Range(0, 5);
                 if (randomNum == 0)
                 {
                     SpawnObjects(PlantPrefab, 1);
@@ -107,8 +109,8 @@ public class OrganismInitilisation : MonoBehaviour
         Vector3 platformSize = platformCollider.bounds.size;
 
         // Generate random positions within the platform's bounds
-        float x = Random.Range(platformCenter.x - platformSize.x / 2, platformCenter.x + platformSize.x / 2);
-        float z = Random.Range(platformCenter.z - platformSize.z / 2, platformCenter.z + platformSize.z / 2);
+        float x = UnityEngine.Random.Range(platformCenter.x - platformSize.x / 2, platformCenter.x + platformSize.x / 2);
+        float z = UnityEngine.Random.Range(platformCenter.z - platformSize.z / 2, platformCenter.z + platformSize.z / 2);
         float y = 0;
 
         return new Vector3(x, y, z);
