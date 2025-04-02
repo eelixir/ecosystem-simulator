@@ -20,7 +20,7 @@ public class OrganismInitilisation : MonoBehaviour
 
     // Randomly spawning new plants
     private float spawnTimer = 0f;
-    private float spawnInterval = 1f;
+    private float spawnInterval = 5;
 
     void Start()
     {
@@ -72,6 +72,7 @@ public class OrganismInitilisation : MonoBehaviour
                 if (randomNum == 0)
                 {
                     SpawnObjects(PlantPrefab, 1);
+                    spawnTimer = 0;
                 }
             }
 

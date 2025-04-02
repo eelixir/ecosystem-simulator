@@ -17,7 +17,8 @@ public class FreeCamController : MonoBehaviour
 
     void Update()
     {
-        if (DeerOOP.FreeCamControllerUpdater || WolfOOP.FreeCamControllerUpdater)
+        // Checks to see if any menus are open and if so suspends free camera movement and enables cursor
+        if (DeerOOP.FreeCamControllerUpdater || WolfOOP.FreeCamControllerUpdater || PauseMenuUpdater.FreeCamControllerUpdater)
         {
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.Confined;
