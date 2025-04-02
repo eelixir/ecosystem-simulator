@@ -461,9 +461,7 @@ public class WolfOOP : OrganismOOP
 
     void organismDead()
     {
-        health = 0;
         EnvironmentData.WolfPopulation -= 1;
-        isAlive = false;
         // If organism is dead then destory gameObject
         Object.Destroy(gameObject);
     }

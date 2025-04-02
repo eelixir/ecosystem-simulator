@@ -531,9 +531,7 @@ public class DeerOOP : OrganismOOP
 
     void organismDead()
     {
-        health = 0;
         EnvironmentData.DeerPopulation -= 1;
-        isAlive = false;
         // If organism is dead then destory gameObject
         Object.Destroy(gameObject);
     }
