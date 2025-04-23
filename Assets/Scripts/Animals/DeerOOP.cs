@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -9,6 +11,7 @@ public class DeerOOP : OrganismOOP
     private float decreaseInterval = 1f;
     private float logTimer = 0f;
     private float logInterval = 1f;
+    public GameObject DeerPrefab;
 
     // Organism Data UI
     public static bool CanvasOrganismDataUI = false;
@@ -33,7 +36,7 @@ public class DeerOOP : OrganismOOP
     public float distanceToPlant;
     public float distanceToMate;
     public float distanceToWater;
-    public int matingCooldown = 0;
+    public int matingCooldown = 20;
 
 
     // Start function when script is first ran
@@ -75,6 +78,7 @@ public class DeerOOP : OrganismOOP
             Detection();
             BehaviourUpdating();
             Pathfinding();
+
 
             // If organism is not alive then decrease population by 1 and set isAlive to false
             if (health <= 0)
@@ -288,6 +292,19 @@ public class DeerOOP : OrganismOOP
         }
     }
 
+    private DeerOOP FindSecondClosestDeer()
+    {
+        var deerList = GameObject.FindGameObjectsWithTag("Deer")
+            .Where(d => d != gameObject && d.activeInHierarchy)
+            .Select(d => new { obj = d, dist = Vector3.Distance(transform.position, d.transform.position) })
+            .OrderBy(d => d.dist)
+            .ToList();
+
+        return deerList.Count >= 2
+            ? deerList[1].obj.GetComponent<DeerOOP>()
+            : (deerList.Count == 1 ? deerList[0].obj.GetComponent<DeerOOP>() : null);
+    }
+
 
     // Function for the behavioural status of the wolf that determines the pathfinding
     void Pathfinding()
@@ -321,9 +338,16 @@ public class DeerOOP : OrganismOOP
                 break;
 
             case "mating":
-                // Mating behavior
-                matingCooldown = 20;
+                if (matingCooldown == 0)
+                {
+                    matingCooldown = 20;
+                    DeerOOP parentA = GetComponent<DeerOOP>();
+                    DeerOOP parentB = FindSecondClosestDeer();
+                    Reproduce(parentA, parentB, DeerPrefab);
+                    Debug.Log("Mated!");
+                }
                 break;
+
 
             default:
                 Debug.LogError("Error: " + organismName + " has an unrecognized behaviouralState.");
@@ -496,6 +520,62 @@ public class DeerOOP : OrganismOOP
         {
             agent.isStopped = true;
         }
+    }
+
+    // U
+    // pdates stats to calculated ones
+    public void InitialiseStats(int health, int hunger, int thirst, int stamina, int speed, int sight)
+    {
+        healthMax = health;
+        hungerMax = hunger;
+        thirstMax = thirst;
+        staminaMax = stamina;
+        speedMax = speed;
+        radius = sight;
+    }
+
+    // Applies mutations and genetics and instatiates offspring
+    public static DeerOOP Reproduce(DeerOOP parentA, DeerOOP parentB, GameObject deerPrefab)
+    {
+        // Base multipliers
+        float healthMultiplier = Random.Range(0.9f, 1.1f);
+        float hungerMultiplier = Random.Range(0.9f, 1.1f);
+        float thirstMultiplier = Random.Range(0.9f, 1.1f);
+        float staminaMultiplier = Random.Range(0.9f, 1.1f);
+        float speedMultiplier = Random.Range(0.9f, 1.1f);
+        float sightMultiplier = Random.Range(0.9f, 1.1f);
+
+        // Mutation probabilities
+        int healthMutation = Random.Range(0, 100);
+        int hungerMutation = Random.Range(0, 100);
+        int thirstMutation = Random.Range(0, 100);
+        int staminaMutation = Random.Range(0, 100);
+        int speedMutation = Random.Range(0, 100);
+        int sightMutation = Random.Range(0, 100);
+
+        // Creates attributes and rounds them using parent values
+        int health = Mathf.RoundToInt(((parentA.healthMax + parentB.healthMax) / 2f) * healthMultiplier);
+        int hunger = Mathf.RoundToInt(((parentA.hungerMax + parentB.hungerMax) / 2f) * hungerMultiplier);
+        int thirst = Mathf.RoundToInt(((parentA.thirstMax + parentB.thirstMax) / 2f) * thirstMultiplier);
+        int stamina = Mathf.RoundToInt(((parentA.staminaMax + parentB.staminaMax) / 2f) * staminaMultiplier);
+        int speed = Mathf.RoundToInt(((parentA.speedMax + parentB.speedMax) / 2f) * speedMultiplier);
+        int sight = Mathf.RoundToInt(((parentA.radius + parentB.radius) / 2f) * sightMultiplier);
+
+        // Mutation checks
+        if (healthMutation == 50) health = Mathf.RoundToInt(health * 1.25f);
+        else if (hungerMutation == 50) hunger = Mathf.RoundToInt(hunger * 1.25f);
+        else if (thirstMutation == 50) thirst = Mathf.RoundToInt(thirst * 1.25f);
+        else if (staminaMutation == 50) stamina = Mathf.RoundToInt(stamina * 1.25f);
+        else if (speedMutation == 50) speed = Mathf.RoundToInt(speed * 1.25f);
+        else if (sightMutation == 50) sight = Mathf.RoundToInt(sight * 1.25f);
+
+        // Spawn new deer
+        Vector3 spawnPos = parentA.transform.position + new Vector3(Random.Range(-2f, 2f), 0, Random.Range(-2f, 2f));
+        GameObject baby = Instantiate(deerPrefab, spawnPos, Quaternion.identity);
+        DeerOOP babyDeer = baby.GetComponent<DeerOOP>();
+        babyDeer.InitialiseStats(health, hunger, thirst, stamina, speed, sight);
+
+        return babyDeer;
     }
 
 

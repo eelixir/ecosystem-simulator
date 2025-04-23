@@ -355,15 +355,21 @@ MonoBehaviour:
   thirstMax: 0
   stamina: 0
   staminaMax: 0
+  speedMax: 0
   movementState: 
   behaviouralState: 
-  skills: []
   radius: 0
-  DeerCamera: {fileID: 2025617984432945007}
   agent: {fileID: 9008457656639571502}
+  DeerCamera: {fileID: 2025617984432945007}
+  DeerPrefab: {fileID: 3938902168483293580}
   detectionLayer:
     serializedVersion: 2
     m_Bits: 0
+  distanceToWolf: 0
+  distanceToPlant: 0
+  distanceToMate: 0
+  distanceToWater: 0
+  matingCooldown: 0
 --- !u!65 &5150823425123065962
 BoxCollider:
   m_ObjectHideFlags: 0

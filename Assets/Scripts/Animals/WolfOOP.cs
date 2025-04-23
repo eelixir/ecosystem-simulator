@@ -64,6 +64,63 @@ public class WolfOOP : OrganismOOP
         Debug.Log(organismName + " initialized.");
     }
 
+    // Updates stats to calculated ones
+    public void InitialiseStats(int health, int hunger, int thirst, int stamina, int speed, int sight)
+    {
+        healthMax = health;
+        hungerMax = hunger;
+        thirstMax = thirst;
+        staminaMax = stamina;
+        speedMax = speed;
+        radius = sight;
+    }
+
+    // Applies mutations and genetics and instatiates offspring
+    public static WolfOOP Reproduce(WolfOOP parentA, WolfOOP parentB, GameObject wolfPrefab)
+    {
+        // Base multipliers
+        float healthMultiplier = Random.Range(0.9f, 1.1f);
+        float hungerMultiplier = Random.Range(0.9f, 1.1f);
+        float thirstMultiplier = Random.Range(0.9f, 1.1f);
+        float staminaMultiplier = Random.Range(0.9f, 1.1f);
+        float speedMultiplier = Random.Range(0.9f, 1.1f);
+        float sightMultiplier = Random.Range(0.9f, 1.1f);
+
+        // Mutation probabilities
+        int healthMutation = Random.Range(0, 100);
+        int hungerMutation = Random.Range(0, 100);
+        int thirstMutation = Random.Range(0, 100);
+        int staminaMutation = Random.Range(0, 100);
+        int speedMutation = Random.Range(0, 100);
+        int sightMutation = Random.Range(0, 100);
+
+        // Creates attributes and rounds them using parent values
+        int health = Mathf.RoundToInt(((parentA.healthMax + parentB.healthMax) / 2f) * healthMultiplier);
+        int hunger = Mathf.RoundToInt(((parentA.hungerMax + parentB.hungerMax) / 2f) * hungerMultiplier);
+        int thirst = Mathf.RoundToInt(((parentA.thirstMax + parentB.thirstMax) / 2f) * thirstMultiplier);
+        int stamina = Mathf.RoundToInt(((parentA.staminaMax + parentB.staminaMax) / 2f) * staminaMultiplier);
+        int speed = Mathf.RoundToInt(((parentA.speedMax + parentB.speedMax) / 2f) * speedMultiplier);
+        int sight = Mathf.RoundToInt(((parentA.radius + parentB.radius) / 2f) * sightMultiplier);
+
+        // Mutation checks
+        if (healthMutation == 50) health = Mathf.RoundToInt(health * 1.25f);
+        else if (hungerMutation == 50) hunger = Mathf.RoundToInt(hunger * 1.25f);
+        else if (thirstMutation == 50) thirst = Mathf.RoundToInt(thirst * 1.25f);
+        else if (staminaMutation == 50) stamina = Mathf.RoundToInt(stamina * 1.25f);
+        else if (speedMutation == 50) speed = Mathf.RoundToInt(speed * 1.25f);
+        else if (sightMutation == 50) sight = Mathf.RoundToInt(sight * 1.25f);
+
+        // Spawn new wolf
+        Vector3 spawnPos = parentA.transform.position + new Vector3(Random.Range(-2f, 2f), 0, Random.Range(-2f, 2f));
+        GameObject baby = Instantiate(wolfPrefab, spawnPos, Quaternion.identity);
+        WolfOOP babyWolf = baby.GetComponent<WolfOOP>();
+        babyWolf.InitialiseStats(health, hunger, thirst, stamina, speed, sight);
+
+        return babyWolf;
+    }
+
+
+
 
     // Update function
     void Update()
@@ -291,6 +348,7 @@ public class WolfOOP : OrganismOOP
 
             case "mating":
                 // Mating behavior
+                Debug.Log("Mated!");
                 matingCooldown = 20;
                 break;
 
