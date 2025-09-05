@@ -4,7 +4,7 @@
 
 The Ecosystem Simulator is a sandbox-based game designed to simulate evolution in a virtual environment. It features natural selection, genetic mutation, and adaptation, creating dynamic ecosystems populated by evolving organisms. Players can observe and interact with complex behaviours, traits, and strategies as populations evolve over generations. The simulator offers a fascinating insight into the mechanisms driving evolutionary processes, suitable for both educational purposes and scientific exploration.
 
-This project was developed as part of the A Level OCR NEA H446/03 Computer Science coursework.
+This project was developed as part of the A Level OCR NEA H446/03 Computer Science coursework, achieving a score of 69/70 marks.
 
 [Documentation →](https://drive.google.com/file/d/1CzBtYzAui-JSZK_fTNJJfbaPxHjnfMtR/view)
 
@@ -36,7 +36,7 @@ This project was developed as part of the A Level OCR NEA H446/03 Computer Scien
 
 ### Installation and Running
 
-1.  **Clone the Repository:**
+1. **Clone the Repository:**
 
     ```
     git clone https://github.com/eelixir/environment-simulator
@@ -75,3 +75,5 @@ This project is licensed under the MIT License.
 **Course:** A Level OCR NEA H446/03 Computer Science
 
 **Academic Year:** 2024/25
+
+**Coursework Score:** 69/70
