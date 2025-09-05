@@ -6,7 +6,7 @@ The Ecosystem Simulator is a sandbox-based game designed to simulate evolution i
 
 This project was developed as part of the A Level OCR NEA H446/03 Computer Science coursework, achieving a score of 69/70 marks.
 
-[Documentation →](https://drive.google.com/file/d/1CzBtYzAui-JSZK_fTNJJfbaPxHjnfMtR/view)
+[Read Documentation →](https://drive.google.com/file/d/1CzBtYzAui-JSZK_fTNJJfbaPxHjnfMtR/view)
 
 ## Features
 
@@ -32,40 +32,6 @@ This project was developed as part of the A Level OCR NEA H446/03 Computer Scien
 
 * **3D Low Poly Graphics:** A simplified, blocky art style for efficient rendering and clear focus on simulation mechanics.
 
-## Getting Started
-
-### Installation and Running
-
-1. **Clone the Repository:**
-
-    ```
-    git clone https://github.com/eelixir/environment-simulator
-    ```
-
-2.  **Open in Unity:**
-
-    * Open Unity Hub.
-
-    * Add the cloned project folder.
-
-    * Open the project in Unity (ensure you have a compatible Unity version installed, e.g., 2021.3.x LTS).
-
-3.  **Build and Run (Optional):**
-
-    * Navigate to `File > Build Settings`.
-
-    * Select your target platform (e.g., PC, Mac & Linux Standalone).
-
-    * Click "Build" to create a standalone executable.
-
-4.  **Play in Editor:**
-
-    * Open the main scene (e.g., `Assets/Scenes/MainMenu.unity`).
-
-    * Press the "Play" button in the Unity editor to run the game.
-
-
-
 ## License
 
 This project is licensed under the MIT License.
@@ -74,4 +40,4 @@ This project is licensed under the MIT License.
 
 **Academic Year:** 2024/25
 
-**Coursework Score:** 69/70
+**Final Score:** 69/70 (A*)
