@@ -70,8 +70,6 @@ This project was developed as part of the A Level OCR NEA H446/03 Computer Scien
 
 This project is licensed under the MIT License.
 
-**Developed by:** [elixir](https://x.com/elixrxyz)
-
 **Course:** A Level OCR NEA H446/03 Computer Science
 
 **Academic Year:** 2024/25
